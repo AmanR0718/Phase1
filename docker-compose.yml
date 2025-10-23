@@ -1,0 +1,60 @@
+version: "3.9"
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: farmer-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7.0
+    container_name: farmer-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: farmer-backend
+    restart: unless-stopped
+    env_file:
+      - backend/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+      - redis
+    volumes:
+      - ./backend/app:/app/app
+      - ./uploads:/app/uploads 
+    command: >
+      sh -c "until nc -z mongo 27017; do echo 'Waiting for Mongo...'; sleep 1; done &&
+             until nc -z redis 6379; do echo 'Waiting for Redis...'; sleep 1; done &&
+             python scripts/seed_admin.py &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+  worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: farmer-worker
+    restart: unless-stopped
+    env_file:
+      - backend/.env
+    depends_on:
+      - mongo
+      - redis
+    volumes:
+      - ./backend/app:/app/app
+      - ./uploads:/app/uploads
+    command: >
+      sh -c "until nc -z mongo 27017; do echo 'Waiting for Mongo...'; sleep 1; done &&
+             until nc -z redis 6379; do echo 'Waiting for Redis...'; sleep 1; done &&
+             celery -A app.tasks.celery_app.celery_app worker --loglevel=info --concurrency=1"
+volumes:
+  mongo_data:

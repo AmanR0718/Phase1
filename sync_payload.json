@@ -1,0 +1,17 @@
+{
+  "farmers": [
+    {
+      "temp_id": "offline_1",
+      "nrc_number": "123456/12/1",
+      "personal_info": {"first_name":"Alice","last_name":"Zed","phone_primary":"+260970000001","date_of_birth":"1990-01-01"},
+      "address": {"province":"Central","district":"Kabwe","gps_latitude":-13.0,"gps_longitude":28.5}
+    },
+    {
+      "temp_id": "offline_2",
+      "nrc_number": "654321/21/2",
+      "personal_info": {"first_name":"Bob","last_name":"Y","phone_primary":"+260970000002","date_of_birth":"1985-06-01"},
+      "address": {"province":"Lusaka","district":"Chilanga","gps_latitude":-15.4,"gps_longitude":28.3}
+    }
+  ],
+  "last_sync": null
+}

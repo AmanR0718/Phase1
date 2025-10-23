@@ -1,0 +1,13 @@
+{
+  "nrc_number": "123456/12/1",
+  "personal_info": {
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "phone_primary": "+260970000000",
+    "date_of_birth": "2010-01-01"
+  },
+  "address": {
+    "province": "Lusaka",
+    "district": "Chilanga"
+  }
+}
