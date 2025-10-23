@@ -105,3 +105,12 @@ docker logs farmer-worker -f
 
 
 ZM12345678_photo.jpg
+
+
+git remote -v
+git remote set-url origin https://github.com/AmanR0718/Phase1.git
+
+git add .
+git status
+git commit -m "Describe your changes here"
+git push origin main
