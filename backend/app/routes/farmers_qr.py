@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
 from app.utils.security import verify_qr_signature
 from app.database import get_database
@@ -7,7 +7,7 @@ import os
 
 router = APIRouter(prefix="/api/farmers", tags=["Farmers QR & ID"])
 
-# ✅  Verify QR authenticity
+# ✅ Verify QR authenticity
 @router.post("/verify-qr")
 async def verify_qr(payload: dict, db=Depends(get_database)):
     """
@@ -15,9 +15,10 @@ async def verify_qr(payload: dict, db=Depends(get_database)):
     Expected payload: {"farmer_id": "...", "timestamp": "...", "signature": "..."}
     """
     farmer_id = payload.get("farmer_id")
+    timestamp = payload.get("timestamp")
     signature = payload.get("signature")
 
-    if not farmer_id or not signature:
+    if not farmer_id or not timestamp or not signature:
         raise HTTPException(status_code=400, detail="Missing fields in payload")
 
     if not verify_qr_signature(payload):
@@ -27,7 +28,6 @@ async def verify_qr(payload: dict, db=Depends(get_database)):
     if not farmer:
         raise HTTPException(status_code=404, detail="Farmer not found")
 
-    # Return minimal verified info
     return {
         "verified": True,
         "farmer_id": farmer_id,
@@ -36,8 +36,7 @@ async def verify_qr(payload: dict, db=Depends(get_database)):
         "district": farmer["address"].get("district"),
     }
 
-
-# ✅  Secure ID card PDF download
+# ✅ Secure ID card PDF download
 @router.get("/{farmer_id}/download-idcard",
             dependencies=[Depends(require_role(["ADMIN", "OPERATOR"]))])
 async def download_idcard(farmer_id: str, db=Depends(get_database)):

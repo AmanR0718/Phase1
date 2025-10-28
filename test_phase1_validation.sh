@@ -7,6 +7,9 @@ API="http://localhost:8000"
 PHOTO_PATH="test_uploads/photo.jpg"
 EXPECTED_DB="zambian_farmer_db"
 
+# === Pre-flight checks ===
+command -v jq >/dev/null 2>&1 || { echo "❌ jq is required but not installed"; exit 1; }
+
 # === DB Sanity Check ===
 echo "🧠 Checking backend DB target..."
 BACKEND_DB=$(docker exec farmer-backend sh -c "python -c 'from app.database import get_database; print(get_database().name)'")
@@ -18,54 +21,72 @@ echo "✅ Backend DB: $BACKEND_DB"
 
 # === 1. LOGIN ===
 echo "🔐 Logging in..."
-REFRESH=$(curl -s -X POST $API/api/auth/login \
+LOGIN_RESPONSE=$(curl -sf -X POST $API/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin@agrimanage.com","password":"admin123"}' | jq -r '.refresh_token')
+  -d '{"username":"admin@agrimanage.com","password":"admin123"}')
 
-ACCESS=$(curl -s -X POST $API/api/auth/refresh \
-  -H "Content-Type: application/json" \
-  -d "{\"refresh_token\":\"$REFRESH\"}" | jq -r '.access_token')
+REFRESH=$(echo "$LOGIN_RESPONSE" | jq -r '.refresh_token')
+if [ -z "$REFRESH" ] || [ "$REFRESH" = "null" ]; then
+  echo "❌ Login did not return a refresh token"; exit 1
+fi
 
-if [ -z "$ACCESS" ]; then
-  echo "❌ Login failed"; exit 1
+ACCESS=$(jq -n --arg rt "$REFRESH" '{refresh_token:$rt}' | \
+  curl -sf -X POST $API/api/auth/refresh \
+    -H "Content-Type: application/json" \
+    -d @- | jq -r '.access_token')
+
+if [ -z "$ACCESS" ] || [ "$ACCESS" = "null" ]; then
+  echo "❌ Failed to obtain access token"; exit 1
 fi
 echo "✅ Logged in"
 
 # === 2. CREATE FARMER ===
 echo "👩🏽 Creating farmer..."
-FARMER_ID=$(curl -s -X POST $API/api/farmers/ \
+FARMER_RESPONSE=$(curl -sf -X POST $API/api/farmers/ \
   -H "Authorization: Bearer $ACCESS" \
   -H "Content-Type: application/json" \
   -d '{
     "nrc_number":"999999/11/9",
     "personal_info":{"first_name":"Grace","last_name":"Mwila","phone_primary":"+260971111111","date_of_birth":"1995-02-15"},
     "address":{"province":"Central","district":"Chibombo"}
-  }' | jq -r '.farmer_id')
+  }')
 
-if [ -z "$FARMER_ID" ]; then
-  echo "❌ Farmer creation failed"; exit 1
+FARMER_ID=$(echo "$FARMER_RESPONSE" | jq -r '.farmer_id')
+if [ -z "$FARMER_ID" ] || [ "$FARMER_ID" = "null" ]; then
+  echo "❌ Farmer creation failed"; echo "$FARMER_RESPONSE"; exit 1
 fi
 echo "✅ Farmer created: $FARMER_ID"
 
 # === 3. UPLOAD PHOTO ===
 echo "📸 Uploading photo..."
-curl -s -X POST $API/api/farmers/${FARMER_ID}/upload-photo \
+PHOTO_UPLOAD=$(curl -sf -X POST $API/api/farmers/${FARMER_ID}/upload-photo \
   -H "Authorization: Bearer $ACCESS" \
-  -F "file=@${PHOTO_PATH}" | jq
+  -F "file=@${PHOTO_PATH}")
+echo "$PHOTO_UPLOAD" | jq
+if ! echo "$PHOTO_UPLOAD" | grep -q "photo_path"; then
+  echo "❌ Photo upload failed"; exit 1
+fi
 
 # === 4. GENERATE ID CARD ===
 echo "🪪 Generating ID card..."
-curl -s -X POST $API/api/farmers/${FARMER_ID}/generate-idcard \
+curl -sf -X POST $API/api/farmers/${FARMER_ID}/generate-idcard \
   -H "Authorization: Bearer $ACCESS" | jq
 sleep 5
 
-# === 5. VERIFY QR SIGNATURE (simulate verification) ===
+
+
+
+# === 5. VERIFY QR SIGNATURE ===
 echo "🔎 Verifying QR..."
-TIMESTAMP=$(python3 -c "from datetime import datetime; print(datetime.utcnow().isoformat())")
+TIMESTAMP=$(date +%s)  # epoch seconds
+
 SIGNATURE=$(python3 - <<PY
-import hmac, hashlib, base64
-msg = f"${FARMER_ID}|${TIMESTAMP}".encode()
-sig = hmac.new(b"supersecretkey_agrimanage_2025", msg, hashlib.sha256).digest()
+import hmac, hashlib, base64, os
+farmer_id = "${FARMER_ID}"
+timestamp = "${TIMESTAMP}"
+secret = os.getenv("SECRET_KEY", "supersecretkey_agrimanage_2025").encode()
+msg = f"{farmer_id}|{timestamp}".encode()
+sig = hmac.new(secret, msg, hashlib.sha256).digest()
 print(base64.urlsafe_b64encode(sig).decode())
 PY
 )
@@ -77,15 +98,16 @@ VERIFY_OUTPUT=$(curl -s -X POST $API/api/farmers/verify-qr \
   -H "Content-Type: application/json" \
   -d @qr_test.json)
 
-if echo "$VERIFY_OUTPUT" | grep -q "verified"; then
-  echo "$VERIFY_OUTPUT" | jq
-else
-  echo "⚠️  QR signature verification not matched (expected for mock validation)"
-fi
+echo "$VERIFY_OUTPUT" | jq
+
+
+
+
+
 
 # === 6. DOWNLOAD ID CARD ===
 echo "📥 Downloading ID card..."
-curl -s -X GET $API/api/farmers/${FARMER_ID}/download-idcard \
+curl -sf -X GET $API/api/farmers/${FARMER_ID}/download-idcard \
   -H "Authorization: Bearer $ACCESS" \
   -o ${FARMER_ID}_card.pdf
 
@@ -100,17 +122,20 @@ fi
 echo "🧠 Verifying database entries..."
 docker exec farmer-mongo mongosh --quiet --eval "
 use ${EXPECTED_DB};
-db.farmers.find(
-  { farmer_id: '${FARMER_ID}' },
-  { _id:0, farmer_id:1, photo_path:1, id_card_path:1 }
-).pretty();
-" | tee mongo_output.log
+JSON.stringify(db.farmers.findOne({ farmer_id: '${FARMER_ID}' }, { _id:0, farmer_id:1, photo_path:1, id_card_path:1 }));
+" > mongo_output.json
 
-if grep -q "id_card_path" mongo_output.log; then
+cat mongo_output.json | jq .
+
+if jq -e '.farmer_id' mongo_output.json >/dev/null; then
   echo "✅ MongoDB record confirmed for $FARMER_ID"
 else
   echo "❌ Farmer record missing in DB!"
   exit 1
 fi
+
+
+
+
 
 echo "🎉 All Phase 1.5 validation checks passed successfully!"

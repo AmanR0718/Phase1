@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/farmers", tags=["Farmers"])
 
 # ✅ Create farmer (ADMIN or OPERATOR only)
 @router.post("/", response_model=FarmerOut, status_code=201,
-             dependencies=[Depends(require_role(["ADMIN", "OPERATOR"]))])
+            dependencies=[Depends(require_role(["ADMIN", "OPERATOR"]))])
 async def create_farmer(farmer: FarmerCreate, db=Depends(get_database)):
     data = farmer.dict()
 
@@ -24,8 +24,8 @@ async def create_farmer(farmer: FarmerCreate, db=Depends(get_database)):
     data["created_at"] = datetime.utcnow()
     data["registration_status"] = "pending"
 
-    await db.farmers.insert_one(data)
-    return data
+    result = await db.farmers.insert_one(data)
+    return FarmerOut(**data)
 
 
 # ✅ Get list of farmers (ADMIN, OPERATOR, VIEWER)
@@ -64,7 +64,7 @@ async def delete_farmer(farmer_id: str, db=Depends(get_database)):
 
 # ✅ Generate ID card (async Celery task)
 @router.post("/{farmer_id}/generate-idcard",
-             dependencies=[Depends(require_role(["ADMIN", "OPERATOR"]))])
+            dependencies=[Depends(require_role(["ADMIN", "OPERATOR"]))])
 async def generate_farmer_idcard(farmer_id: str, background_tasks: BackgroundTasks, db=Depends(get_database)):
     farmer = await db.farmers.find_one({"farmer_id": farmer_id})
     if not farmer:

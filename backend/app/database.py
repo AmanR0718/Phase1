@@ -4,7 +4,7 @@ _client = None
 def get_client():
     global _client
     if not _client:
-        _client = AsyncIOMotorClient(settings.MONGO_URI)
+        _client = AsyncIOMotorClient(settings.MONGODB_URL)
     return _client
 def get_database():
-    return get_client()[settings.MONGO_DB]
+    return get_client()[settings.MONGODB_DB_NAME]

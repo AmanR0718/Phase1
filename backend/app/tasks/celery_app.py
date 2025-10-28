@@ -9,7 +9,7 @@ celery_app = Celery(
     "farmer_sync",
     broker=REDIS_URL,
     backend=REDIS_URL,
-    include=["app.tasks.id_card_task"],  # 👈 Make sure your task is imported!
+    include=["app.tasks.id_card_task"],  # 👈 Ensure your task module is imported
 )
 
 # Configuration for reliability and compatibility
