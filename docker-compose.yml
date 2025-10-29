@@ -91,6 +91,19 @@ services:
     networks:
       - farmer_network
 
+  farmer-admin:
+    build:
+      context: ./farmer-admin
+      dockerfile: Dockerfile
+    container_name: farmer-admin
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - farmer_network
+
 volumes:
   mongo_data:
 

@@ -138,3 +138,10 @@ curl -s -X POST http://localhost:8000/api/farmers/ \
       "district": "Chilanga"
     }
   }' | jq
+
+
+
+
+
+
+docker compose -f docker-compose.admin.yml up -d --build
