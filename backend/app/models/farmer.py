@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, Field
 from datetime import datetime
+from typing import Optional
+
 class PersonalInfo(BaseModel):
     first_name: str
     last_name: str
@@ -12,6 +13,9 @@ class FarmerCreate(BaseModel):
     temp_id: Optional[str] = None
     personal_info: PersonalInfo
     address: Address
-class FarmerOut(FarmerCreate):
+class FarmerOut(BaseModel):
     farmer_id: str
-    created_at: Optional[datetime] = None
+    created_at: datetime
+    registration_status: str
+    # … other fields …
+    _id: Optional[str] = None   # now not required

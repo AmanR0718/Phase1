@@ -4,12 +4,12 @@ from pymongo import MongoClient, UpdateOne
 from datetime import datetime
 from ..services.farmer_service import FarmerService
 
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongo:27017")
-MONGO_DB = os.getenv("MONGO_DB", "zambian_farmer_db")
+MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://mongo:27017")
+MONGODB_DB_NAME = os.getenv("MONGODB_DB_NAME", "zambian_farmer_db")
 
 def get_db_sync():
-    client = MongoClient(MONGO_URI)
-    return client[MONGO_DB]
+    client = MongoClient(MONGODB_URL)
+    return client[MONGODB_DB_NAME]
 
 @celery_app.task(bind=True)
 def process_sync_batch(self, user_email, records):

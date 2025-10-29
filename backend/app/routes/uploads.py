@@ -17,9 +17,9 @@ async def save_file(file: UploadFile, dest: Path):
         shutil.copyfileobj(file.file, buffer)
 
 @router.post("/{farmer_id}/upload-photo",
-             dependencies=[Depends(require_role(["ADMIN", "OPERATOR"]))])
+            dependencies=[Depends(require_role(["ADMIN", "OPERATOR"]))])
 async def upload_photo(farmer_id: str, file: UploadFile = File(...),
-                       db=Depends(get_database)):
+                db=Depends(get_database)):
     if file.content_type not in ALLOWED_PHOTO_TYPES:
         raise HTTPException(400, "Invalid photo type")
     if file.size and file.size > MAX_FILE_SIZE_MB * 1024 * 1024:
@@ -35,10 +35,10 @@ async def upload_photo(farmer_id: str, file: UploadFile = File(...),
     return {"message": "Photo uploaded", "photo_path": path}
 
 @router.post("/{farmer_id}/upload-document",
-             dependencies=[Depends(require_role(["ADMIN", "OPERATOR"]))])
+            dependencies=[Depends(require_role(["ADMIN", "OPERATOR"]))])
 async def upload_document(farmer_id: str, document_type: str,
-                          file: UploadFile = File(...),
-                          db=Depends(get_database)):
+                        file: UploadFile = File(...),
+                        db=Depends(get_database)):
     if file.content_type not in ALLOWED_DOC_TYPES:
         raise HTTPException(400, "Invalid document type")
 

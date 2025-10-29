@@ -11,8 +11,9 @@ from pymongo import MongoClient
 
 pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-client = MongoClient(settings.MONGO_URI)
-db = client[settings.MONGO_DB]
+client = MongoClient(settings.MONGODB_URL)
+db = client[settings.MONGODB_DB_NAME]
+
 
 EMAIL = settings.SEED_ADMIN_EMAIL
 PASSWORD = settings.SEED_ADMIN_PASSWORD
