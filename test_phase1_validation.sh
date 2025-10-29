@@ -10,6 +10,18 @@ EXPECTED_DB="zambian_farmer_db"
 # === Pre-flight checks ===
 command -v jq >/dev/null 2>&1 || { echo "❌ jq is required but not installed"; exit 1; }
 
+echo "🩺 Running full health check..."
+HEALTH=$(curl -sf http://localhost:8000/health/full | jq -r '.status')
+
+if [ "$HEALTH" != "ok" ]; then
+  echo "❌ One or more components are unhealthy. Full health check failed:"
+  curl -s http://localhost:8000/health/full | jq
+  exit 1
+fi
+
+echo "✅ Full system health confirmed"
+
+
 # === DB Sanity Check ===
 echo "🧠 Checking backend DB target..."
 BACKEND_DB=$(docker exec farmer-backend sh -c "python -c 'from app.database import get_database; print(get_database().name)'")
