@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "./uploads"
     DEBUG: bool = True
 
+    # ✅ Add this missing line:
+    SECRET_KEY: str
+
     class Config:
         env_file = ".env"
 

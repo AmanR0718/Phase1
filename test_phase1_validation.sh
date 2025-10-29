@@ -76,15 +76,15 @@ sleep 5
 
 
 
-# === 5. VERIFY QR SIGNATURE ===
 echo "🔎 Verifying QR..."
-TIMESTAMP=$(date +%s)  # epoch seconds
+TIMESTAMP=$(date +%s)
+SECRET="supersecretkey_agrimanage_2025"
 
 SIGNATURE=$(python3 - <<PY
-import hmac, hashlib, base64, os
+import hmac, hashlib, base64
 farmer_id = "${FARMER_ID}"
 timestamp = "${TIMESTAMP}"
-secret = os.getenv("SECRET_KEY", "supersecretkey_agrimanage_2025").encode()
+secret = "${SECRET}".encode()
 msg = f"{farmer_id}|{timestamp}".encode()
 sig = hmac.new(secret, msg, hashlib.sha256).digest()
 print(base64.urlsafe_b64encode(sig).decode())
@@ -93,6 +93,8 @@ PY
 
 jq -n --arg id "$FARMER_ID" --arg ts "$TIMESTAMP" --arg sig "$SIGNATURE" \
   '{farmer_id:$id, timestamp:$ts, signature:$sig}' > qr_test.json
+
+
 
 VERIFY_OUTPUT=$(curl -s -X POST $API/api/farmers/verify-qr \
   -H "Content-Type: application/json" \
@@ -121,21 +123,22 @@ fi
 # === 7. VERIFY IN MONGODB ===
 echo "🧠 Verifying database entries..."
 docker exec farmer-mongo mongosh --quiet --eval "
-use ${EXPECTED_DB};
-JSON.stringify(db.farmers.findOne({ farmer_id: '${FARMER_ID}' }, { _id:0, farmer_id:1, photo_path:1, id_card_path:1 }));
-" > mongo_output.json
+db = connect('mongodb://admin:Admin123@mongo:27017/${EXPECTED_DB}?authSource=admin');
+var doc = db.farmers.findOne(
+  { farmer_id: '${FARMER_ID}' },
+  { _id:0, farmer_id:1, photo_path:1, id_card_path:1 }
+);
+if (doc) { printjson(doc); }
+" | grep '^{.*}$' > mongo_clean.json || true
 
-cat mongo_output.json | jq .
+cat mongo_clean.json | jq .
 
-if jq -e '.farmer_id' mongo_output.json >/dev/null; then
+if jq -e '.farmer_id' mongo_clean.json >/dev/null; then
   echo "✅ MongoDB record confirmed for $FARMER_ID"
 else
   echo "❌ Farmer record missing in DB!"
   exit 1
 fi
-
-
-
 
 
 echo "🎉 All Phase 1.5 validation checks passed successfully!"

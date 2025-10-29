@@ -1,1 +1,5 @@
-switched to db zambian_farmer_db;
+{
+  farmer_id: 'ZMA6CD76BB',
+  photo_path: '/uploads/photos/ZMA6CD76BB/ZMA6CD76BB_photo.jpg',
+  id_card_path: '/app/uploads/idcards/ZMA6CD76BB_card.pdf'
+}
