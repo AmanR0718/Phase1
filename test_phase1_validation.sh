@@ -128,8 +128,9 @@ var doc = db.farmers.findOne(
   { farmer_id: '${FARMER_ID}' },
   { _id:0, farmer_id:1, photo_path:1, id_card_path:1 }
 );
-if (doc) { printjson(doc); }
-" | grep '^{.*}$' > mongo_clean.json || true
+if (doc) { print(JSON.stringify(doc)); }
+" > mongo_clean.json || true
+
 
 cat mongo_clean.json | jq .
 
