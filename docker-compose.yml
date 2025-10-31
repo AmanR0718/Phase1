@@ -85,9 +85,22 @@ services:
       timeout: 5s
       retries: 3
     command: >
-        sh -c "until nc -z mongo 27017; do echo 'Waiting for Mongo...'; sleep 1; done &&
+      sh -c "until nc -z mongo 27017; do echo 'Waiting for Mongo...'; sleep 1; done &&
             until nc -z redis 6379; do echo 'Waiting for Redis...'; sleep 1; done &&
             celery -A app.tasks.celery_app worker --loglevel=info --concurrency=1"
+    networks:
+      - farmer_network
+
+  farmer-admin:
+    build:
+      context: ./farmer-admin
+      dockerfile: Dockerfile
+    container_name: farmer-admin
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
     networks:
       - farmer_network
 
