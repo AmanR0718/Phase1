@@ -30,6 +30,12 @@ services:
       - ./backend:/app
       - ./uploads:/app/uploads
     restart: always
+    healthcheck:
+      test: ["CMD", "celery", "-A", "app.tasks.celery_app.celery_app", "inspect", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
 
   farmer-redis:
     image: redis:7.0
