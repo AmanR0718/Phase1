@@ -135,14 +135,13 @@ fi
 # === 7. VERIFY IN MONGODB ===
 echo "🧠 Verifying database entries..."
 docker exec farmer-mongo mongosh --quiet --eval "
-db = connect('mongodb://admin:Admin123@mongo:27017/${EXPECTED_DB}?authSource=admin');
+db = connect('mongodb://admin:Admin123@farmer-mongo:27017/${EXPECTED_DB}?authSource=admin');
 var doc = db.farmers.findOne(
   { farmer_id: '${FARMER_ID}' },
   { _id:0, farmer_id:1, photo_path:1, id_card_path:1 }
 );
 if (doc) { print(JSON.stringify(doc)); }
 " > mongo_clean.json || true
-
 
 cat mongo_clean.json | jq .
 
@@ -153,5 +152,5 @@ else
   exit 1
 fi
 
-
 echo "🎉 All Phase 1.5 validation checks passed successfully!"
+

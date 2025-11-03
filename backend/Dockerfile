@@ -15,13 +15,13 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # ---------- Install Python dependencies ----------
-COPY backend/requirements.txt .
+COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # ---------- Copy app code ----------
-COPY backend/app ./app
-COPY backend/.env ./.env
-COPY backend/scripts ./scripts
+COPY app ./app
+COPY .env ./.env
+COPY scripts ./scripts
 
 # ---------- Healthcheck ----------
 HEALTHCHECK CMD curl --fail http://localhost:8000/health || exit 1
