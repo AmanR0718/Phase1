@@ -1,0 +1,124 @@
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import useAuthStore from '@/store/authStore'
+import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { RoleRoute } from '@/components/RoleRoute'
+
+// Pages
+import Login from '@/pages/Login'
+import AdminDashboard from '@/pages/AdminDashboard'
+import OperatorDashboard from '@/pages/OperatorDashboard'
+import Dashboard from '@/pages/Dashboard'
+import FarmerRegistration from '@/pages/FarmerRegistration'
+import OperatorManagement from '@/pages/OperatorManagement'
+
+function App() {
+  const { loadUser, token, user } = useAuthStore()
+
+  useEffect(() => {
+    if (token) {
+      loadUser()
+    }
+  }, [token])
+
+  // Redirect based on role
+  const getDashboardRoute = () => {
+    if (!user) return '/login'
+    const role = user.roles?.[0]?.toLowerCase()
+    if (role === 'admin') return '/admin-dashboard'
+    if (role === 'operator') return '/operator-dashboard'
+    if (role === 'farmer') return '/farmer-dashboard'
+    return '/login'
+  }
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Admin Routes */}
+        <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute>
+              <RoleRoute requiredRole="admin">
+                <AdminDashboard />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/operators/manage"
+          element={
+            <ProtectedRoute>
+              <RoleRoute requiredRole="admin">
+                <OperatorManagement />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Operator Routes */}
+        <Route
+          path="/operator-dashboard"
+          element={
+            <ProtectedRoute>
+              <RoleRoute requiredRole="operator">
+                <OperatorDashboard />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Shared Routes (Admin + Operator) */}
+        <Route
+          path="/farmers/create"
+          element={
+            <ProtectedRoute>
+              <RoleRoute requiredRole={['admin', 'operator']}>
+                <FarmerRegistration />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/farmers"
+          element={
+            <ProtectedRoute>
+              <RoleRoute requiredRole={['admin', 'operator']}>
+                <Dashboard />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Farmer Routes */}
+        <Route
+          path="/farmer-dashboard"
+          element={
+            <ProtectedRoute>
+              <RoleRoute requiredRole="farmer">
+                <Dashboard />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Default Route */}
+        <Route 
+          path="/" 
+          element={
+            token ? <Navigate to={getDashboardRoute()} replace /> : <Navigate to="/login" replace />
+          } 
+        />
+        
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+export default App
