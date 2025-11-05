@@ -10,6 +10,8 @@ import AdminDashboard from '@/pages/AdminDashboard'
 import OperatorDashboard from '@/pages/OperatorDashboard'
 import Dashboard from '@/pages/Dashboard'
 import FarmerRegistration from '@/pages/FarmerRegistration'
+import FarmersList from '@/pages/FarmersList'
+import EditFarmer from '@/pages/EditFarmer'
 import OperatorManagement from '@/pages/OperatorManagement'
 
 function App() {
@@ -72,7 +74,18 @@ function App() {
           }
         />
 
-        {/* Shared Routes (Admin + Operator) */}
+        {/* Shared Routes (Admin + Operator) - Farmers Management */}
+        <Route
+          path="/farmers"
+          element={
+            <ProtectedRoute>
+              <RoleRoute requiredRole={['admin', 'operator']}>
+                <FarmersList />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/farmers/create"
           element={
@@ -85,11 +98,11 @@ function App() {
         />
 
         <Route
-          path="/farmers"
+          path="/farmers/edit/:farmerId"
           element={
             <ProtectedRoute>
               <RoleRoute requiredRole={['admin', 'operator']}>
-                <Dashboard />
+                <EditFarmer />
               </RoleRoute>
             </ProtectedRoute>
           }

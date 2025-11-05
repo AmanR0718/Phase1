@@ -1,10 +1,11 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const API_BASE_URL = 'https://glowing-fishstick-xg76vqgjxxph67ww.app.github.dev:8000'
 
-export default function FarmerRegistration() {
+export default function EditFarmer() {
   const navigate = useNavigate()
+  const { farmerId } = useParams()
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -12,8 +13,39 @@ export default function FarmerRegistration() {
     province: '',
     district: ''
   })
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    fetchFarmer()
+  }, [farmerId])
+
+  const fetchFarmer = async () => {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token')
+      const response = await fetch(`${API_BASE_URL}/api/farmers/${farmerId}/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (response.ok) {
+        const farmer = await response.json()
+        setFormData({
+          firstName: farmer.personal_info?.first_name || '',
+          lastName: farmer.personal_info?.last_name || '',
+          phone: farmer.personal_info?.phone_primary || '',
+          province: farmer.address?.province || '',
+          district: farmer.address?.district || ''
+        })
+      }
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -21,16 +53,11 @@ export default function FarmerRegistration() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.firstName || !formData.lastName) {
-      alert('First name and last name required!')
-      return
-    }
-
-    setLoading(true)
+    setSaving(true)
     try {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token')
-      const response = await fetch(`${API_BASE_URL}/api/farmers/`, {
-        method: 'POST',
+      const response = await fetch(`${API_BASE_URL}/api/farmers/${farmerId}/`, {
+        method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -49,17 +76,19 @@ export default function FarmerRegistration() {
       })
 
       if (response.ok) {
-        alert('✅ Farmer created!')
+        alert('✅ Updated!')
         navigate('/farmers')
       } else {
-        setError('Failed to create farmer')
+        setError('Failed to update')
       }
     } catch (err: any) {
       setError(err.message)
     } finally {
-      setLoading(false)
+      setSaving(false)
     }
   }
+
+  if (loading) return <p style={{ padding: '20px' }}>Loading...</p>
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5', padding: '20px' }}>
@@ -68,17 +97,17 @@ export default function FarmerRegistration() {
           ← BACK
         </button>
 
-        <h1>Create New Farmer</h1>
+        <h1>Edit Farmer</h1>
         {error && <div style={{ backgroundColor: '#FEE2E2', color: '#DC2626', padding: '15px', marginBottom: '20px', borderRadius: '6px' }}>{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>First Name *</label>
+            <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>First Name</label>
             <input type="text" value={formData.firstName} onChange={(e) => handleChange('firstName', e.target.value)} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px', boxSizing: 'border-box' }} />
           </div>
 
           <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>Last Name *</label>
+            <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>Last Name</label>
             <input type="text" value={formData.lastName} onChange={(e) => handleChange('lastName', e.target.value)} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px', boxSizing: 'border-box' }} />
           </div>
 
@@ -98,8 +127,8 @@ export default function FarmerRegistration() {
           </div>
 
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button type="submit" disabled={loading} style={{ flex: 1, padding: '12px', backgroundColor: loading ? '#9CA3AF' : '#16A34A', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>
-              {loading ? '⏳ Creating...' : '✅ Create'}
+            <button type="submit" disabled={saving} style={{ flex: 1, padding: '12px', backgroundColor: saving ? '#9CA3AF' : '#16A34A', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>
+              {saving ? '⏳ Saving...' : '✅ Save'}
             </button>
             <button type="button" onClick={() => navigate('/farmers')} style={{ flex: 1, padding: '12px', backgroundColor: '#6B7280', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>
               ❌ Cancel
