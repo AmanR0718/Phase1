@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.routes import auth, farmers, sync, uploads, farmers_qr, health
+from app.routes import auth, farmers, sync, uploads, farmers_qr, health, users
 
 app = FastAPI(title="Zambian Farmer System - Phase1")
 
@@ -28,11 +28,9 @@ app.include_router(sync.router)
 app.include_router(auth.router)
 app.include_router(farmers.router)
 app.include_router(uploads.router)
+app.include_router(users.router)  # NEW: Users management
 app.include_router(farmers_qr.router)
 
-# Static files
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
-@app.get("/health")
-async def health_check():
-    return {"status": "ok"}
+@app.get("/")
+async def root():
+    return {"message": "Zambian Farmer System API - Phase1"}
