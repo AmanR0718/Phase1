@@ -76,7 +76,7 @@ function App() {
 
         {/* Shared Routes (Admin + Operator) - Farmers Management */}
         <Route
-          path="/farmers"
+          path="/farmers/"
           element={
             <ProtectedRoute>
               <RoleRoute requiredRole={['admin', 'operator']}>

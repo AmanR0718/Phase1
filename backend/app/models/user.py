@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import List, Optional
 from datetime import datetime
+
 class UserInDB(BaseModel):
     email: EmailStr
     password_hash: str

@@ -9,7 +9,12 @@ router = APIRouter(prefix="/health", tags=["Health"])
 # Initialize Celery
 celery_app = Celery("farmer_sync", broker=os.getenv("REDIS_URL", "redis://redis:6379/0"))
 
-@router.get("/full")
+@router.get("", summary="Basic health check")
+def basic_health():
+    """Simple health check for Docker and uptime probes"""
+    return {"status": "ok"}
+
+@router.get("/full", summary="Full system health diagnostics")
 def full_health_check():
     status = {
         "mongo": False,
@@ -45,7 +50,7 @@ def full_health_check():
 
     # Disk write check
     try:
-        test_path = os.path.join(os.getenv("UPLOAD_DIR", "./uploads"), "health_test.txt")
+        test_path = os.path.join(os.getenv("UPLOAD_DIR", "/app/uploads"), "health_test.txt")
         with open(test_path, "w") as f:
             f.write("ok")
         os.remove(test_path)

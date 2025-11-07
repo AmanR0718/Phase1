@@ -1,20 +1,38 @@
+
+
 services:
+  # ===============================
+  # 🌾 FASTAPI BACKEND SERVICE
+  # ===============================
   farmer-backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile
     container_name: farmer-backend
+    command: >
+      sh -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     ports:
       - "8000:8000"
     depends_on:
-      - farmer-mongo
-      - farmer-redis
+      farmer-mongo:
+        condition: service_healthy
+      farmer-redis:
+        condition: service_healthy
     env_file:
-      - backend/.env
+      - ./backend/.env
     volumes:
       - ./backend:/app
       - ./uploads:/app/uploads
     restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
+  # ===============================
+  # ⚙️ CELERY WORKER
+  # ===============================
   farmer-worker:
     build:
       context: ./backend
@@ -22,10 +40,12 @@ services:
     command: >
       sh -c "celery -A app.tasks.celery_app.celery_app worker --loglevel=info"
     depends_on:
-      - farmer-mongo
-      - farmer-redis
+      farmer-mongo:
+        condition: service_healthy
+      farmer-redis:
+        condition: service_healthy
     env_file:
-      - backend/.env
+      - ./backend/.env
     volumes:
       - ./backend:/app
       - ./uploads:/app/uploads
@@ -36,7 +56,9 @@ services:
       timeout: 10s
       retries: 5
 
-
+  # ===============================
+  # 🧠 REDIS (CACHE + CELERY BROKER)
+  # ===============================
   farmer-redis:
     image: redis:7.0
     container_name: farmer-redis
@@ -47,7 +69,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: always
 
+  # ===============================
+  # 🍃 MONGODB DATABASE
+  # ===============================
   farmer-mongo:
     image: mongo:7.0
     container_name: farmer-mongo
@@ -56,6 +82,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: Admin123
+      MONGO_INITDB_DATABASE: zambian_farmer_db
     volumes:
       - mongo_data:/data/db
     healthcheck:
@@ -63,6 +90,31 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: always
 
+  # ===============================
+  # 🌐 FRONTEND SERVICE (Optional)
+  # ===============================
+  farmer-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: farmer-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - farmer-backend
+    environment:
+    - VITE_API_BASE_URL=https://glowing-fishstick-xg76vqgjxxph67ww-8000.app.github.dev/api
+    volumes:
+      - ./frontend:/app
+    restart: always
+    command: >
+      sh -c "npm run dev -- --host"
+
+# ===============================
+# Persistent Volumes
+# ===============================
 volumes:
   mongo_data:
+  uploads:

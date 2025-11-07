@@ -1,21 +1,32 @@
-import axiosClient from '@/utils/axios'
+import axiosClient from "@/utils/axios";
 
 export const authService = {
   async login(username: string, password: string) {
-    const { data } = await axiosClient.post('/api/auth/login', { 
-      username, 
-      password 
-    })
-    return data
+    const { data } = await axiosClient.post("/auth/login", {
+      username,
+      password,
+    });
+    return data;
   },
 
   async getCurrentUser() {
-    const { data } = await axiosClient.get('/api/auth/me')
-    return data
+    const { data } = await axiosClient.get("/auth/me");
+    return data;
   },
 
-  async logout() {
-    localStorage.removeItem('token')
-    localStorage.removeItem('refresh_token')
+  async refresh(refresh_token: string): Promise<string | null> {
+    try {
+      const { data } = await axiosClient.post("/auth/refresh", {
+        refresh_token,
+      });
+      return data.access_token;
+    } catch (err) {
+      return null;
+    }
   },
-}
+
+  logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("refresh_token");
+  },
+};

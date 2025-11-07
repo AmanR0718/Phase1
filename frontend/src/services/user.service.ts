@@ -5,7 +5,7 @@ export const userService = {
    * Get all users (operators) - Admin only
    */
   async getUsers(params?: { skip?: number; limit?: number; role?: string }) {
-    const { data } = await axiosClient.get('/api/users/', { params })
+    const { data } = await axiosClient.get('/users/', { params })
     return data
   },
 
@@ -19,7 +19,7 @@ export const userService = {
     phone?: string
     region?: string
   }) {
-    const { data } = await axiosClient.post('/api/users/', {
+    const { data } = await axiosClient.post('/users/', {
       ...userData,
       roles: ['OPERATOR'],
     })
@@ -30,7 +30,7 @@ export const userService = {
    * Update operator
    */
   async updateOperator(userId: string, updates: any) {
-    const { data } = await axiosClient.put(`/api/users/${userId}`, updates)
+    const { data } = await axiosClient.put(`/users/${userId}`, updates)
     return data
   },
 
@@ -38,7 +38,7 @@ export const userService = {
    * Deactivate operator
    */
   async deactivateOperator(userId: string) {
-    const { data } = await axiosClient.patch(`/api/users/${userId}/deactivate`)
+    const { data } = await axiosClient.patch(`/users/${userId}/deactivate`)
     return data
   },
 }
