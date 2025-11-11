@@ -1,0 +1,12 @@
+/* app-level styles (imported by main.jsx) */
+@import "../styles.css";
+
+/* small overrides for react components */
+.view h2 {
+  margin-top: 0;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
