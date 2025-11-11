@@ -1,0 +1,205 @@
+chiefdom_id,chief_name,title,ethnic_group,district_id,district_name,province_id
+CP01-001,Chief Chitanda,Chief,Lenje People,CP01,Chibombo District,CP
+CP01-002,Chieftainess Mungule,Chieftainess,Lenje People,CP01,Chibombo District,CP
+CP01-003,Chief Liteta,Chief,Lenje People,CP01,Chibombo District,CP
+CP02-001,Chief Chamuka,Chief,Lenje People,CP02,Chisamba District,CP
+CP02-002,Chief Liteta,Chief,,CP02,Chisamba District,CP
+CP03-001,Chief Chitambo,Chief,Lala People,CP03,Chitambo District,CP
+CP03-002,Chief Muchinka,Chief,,CP03,Chitambo District,CP
+CP08-001,Chief Mumba,Chief,Kaonde-Ila People,CP08,Mumbwa District,CP
+CP08-002,Chief Kaindu,Chief,,CP08,Mumbwa District,CP
+CP08-003,Chief Chibuluma,Chief,,CP08,Mumbwa District,CP
+CP08-004,Chief Moono,Chief,,CP08,Mumbwa District,CP
+CP08-005,Chief Mulendema,Chief,,CP08,Mumbwa District,CP
+CP10-001,Senior Chief Muchinda,Senior Chief,Lala People,CP10,Serenje District,CP
+CP10-002,Chief Kabamba,Chief,Lala People,CP10,Serenje District,CP
+CP10-003,Chieftainess Serenje,Chieftainess,Lala People,CP10,Serenje District,CP
+CP10-004,Chief Chisomo,Chief,Lala People,CP10,Serenje District,CP
+CP10-005,Chief Mailo,Chief,Lala People,CP10,Serenje District,CP
+CP10-006,Chief Chibale,Chief,,CP10,Serenje District,CP
+CP11-001,Chief Shakumbila,Chief,,CP11,Shibuyunji District,CP
+CB04-001,Senior Chief Nkana,Senior Chief,Lamba People,CB04,Kitwe District,CB
+CB06-001,Chieftainess Shimukunani,Chieftainess,Lamba People,CB06,Lufwanyama District,CB
+CB06-002,Chief Nkana,Chief,,CB06,Lufwanyama District,CB
+CB06-003,Chief Mukutuma,Chief,,CB06,Lufwanyama District,CB
+CB06-004,Chief Shibuchunga,Chief,,CB06,Lufwanyama District,CB
+CB06-005,Chief Fungulwe,Chief,,CB06,Lufwanyama District,CB
+CB06-006,Chief Lumpuma,Chief,,CB06,Lufwanyama District,CB
+CB07-001,Senior Chief Mushili,Senior Chief,Lamba People,CB07,Masaiti District,CB
+CB07-002,Senior Chief Chiwala,Senior Chief,Lamba People,CB07,Masaiti District,CB
+CB07-003,Chief Nkambo,Chief,Lamba People,CB07,Masaiti District,CB
+CB08-001,Senior Chief Ndubeni,Senior Chief,Lima People,CB08,Mpongwe District,CB
+CB08-002,Chief Kalunkumya,Chief,Lima People,CB08,Mpongwe District,CB
+CB08-003,Chieftainess Lesa,Chieftainess,Lima People,CB08,Mpongwe District,CB
+CB08-004,Chief Machiya,Chief,Lima People,CB08,Mpongwe District,CB
+CB08-005,Chieftainess Malembeka,Chieftainess,Lima People,CB08,Mpongwe District,CB
+CB08-006,Chief Mwinuna,Chief,Lima People,CB08,Mpongwe District,CB
+CB10-001,Chief Chiwala,Chief,Lamba People,CB10,Ndola District,CB
+EP01-001,Chief Zingalume,Chief,Chewa People,EP01,Chadiza District,EP
+EP01-002,Chief Mlolo,Chief,Chewa People,EP01,Chadiza District,EP
+EP01-003,Chief Mwangala,Chief,Chewa People,EP01,Chadiza District,EP
+EP02-001,Senior Chief Kambombo,Senior Chief,Senga People,EP02,Chama District,EP
+EP02-002,Chief Chibale,Chief,Senga People,EP02,Chama District,EP
+EP02-003,Chief Chifunda,Chief,Senga People,EP02,Chama District,EP
+EP02-004,Chief Mulilo,Chief,Senga People,EP02,Chama District,EP
+EP03-001,Senior Chief Magodi,Senior Chief,Ngoni-Tumbuka People,EP03,Chasefu District,EP
+EP03-002,Chief Phikamalaza,Chief,Ngoni-Tumbuka People,EP03,Chasefu District,EP
+EP04-001,Chief Kapatamoyo,Chief,Ngoni People,EP04,Chipangali District,EP
+EP04-002,Chief Mnukwa,Chief,Ngoni People,EP04,Chipangali District,EP
+EP04-003,Chief Mshawa,Chief,Ngoni People,EP04,Chipangali District,EP
+EP04-004,Chief Chanje,Chief,Chewa People,EP04,Chipangali District,EP
+EP04-005,Chief Mafuta,Chief,Chewa People,EP04,Chipangali District,EP
+EP04-006,Chief Chinunda,Chief,Chewa People,EP04,Chipangali District,EP
+EP04-007,Chieftainess Mkanda,Chieftainess,Chewa People,EP04,Chipangali District,EP
+EP05-001,Paramount Chief Mpezeni,Paramount Chief,Ngoni People,EP05,Chipata District,EP
+EP05-002,Chief Chinyanku,Chief,Ngoni People,EP05,Chipata District,EP
+EP05-003,Chief Maguya,Chief,Ngoni People,EP05,Chipata District,EP
+EP05-004,Chief Sairi,Chief,Ngoni People,EP05,Chipata District,EP
+EP06-001,Chief Sandwe,Chief,Nsenga People,EP06,Kasenengwa District,EP
+EP07-001,Paramount Chief Kalonga Gawa Undi,Paramount Chief,Chewa People,EP07,Katete District,EP
+EP07-002,Chief Kathumba,Chief,Chewa People,EP07,Katete District,EP
+EP07-003,Chief Kawaza,Chief,Chewa People,EP07,Katete District,EP
+EP07-004,Chief Mbang'ombe,Chief,Chewa People,EP07,Katete District,EP
+EP08-001,Chief Kazembe,Chief,Chewa People,EP08,Lumezi District,EP
+EP08-002,Chieftainess Mwanya,Chieftainess,Chewa People,EP08,Lumezi District,EP
+EP08-003,Chieftainess Mwase Mphangwe,Chieftainess,Chewa People,EP08,Lumezi District,EP
+EP08-004,Chief Chikomeni,Chief,Chewa People,EP08,Lumezi District,EP
+EP08-005,Chief Zumwanda,Chief,Chewa People,EP08,Lumezi District,EP
+EP08-006,Chief Chitungulu,Chief,Chewa People,EP08,Lumezi District,EP
+EP09-001,Chief Kapichila,Chief,Chewa People,EP09,Lundazi District,EP
+EP09-002,Chief Maguya,Chief,Ngoni People,EP09,Lundazi District,EP
+EP09-003,Chief Mshawa,Chief,Ngoni People,EP09,Lundazi District,EP
+EP10-001,Chief Chikuwe,Chief,Chewa People,EP10,Lusangazi District,EP
+EP10-002,Chief Mishoro,Chief,Ngoni People,EP10,Lusangazi District,EP
+EP10-003,Chief Madzimawe,Chief,Ngoni People,EP10,Lusangazi District,EP
+EP10-004,Chief Nzamane,Chief,Ngoni People,EP10,Lusangazi District,EP
+EP11-001,Senior Chief Nsefu,Senior Chief,Kunda People,EP11,Mambwe District,EP
+EP11-002,Chief Jumbe,Chief,Kunda People,EP11,Mambwe District,EP
+EP11-003,Chief Kakumbi,Chief,Kunda People,EP11,Mambwe District,EP
+EP11-004,Chief Malama,Chief,Kunda People,EP11,Mambwe District,EP
+EP11-005,Chief Msoro,Chief,Kunda People,EP11,Mambwe District,EP
+EP11-006,Chief Mnkhanya,Chief,Kunda People,EP11,Mambwe District,EP
+EP14-001,Chieftainess Nyanje,Chieftainess,Nsenga People,EP14,Sinda District,EP
+EP15-001,Chief Pembamoyo,Chief,Chewa People,EP15,Vubwi District,EP
+LP03-001,Chief Chitembo,Chief,,LP03,Chifunabuli District,LP
+LP03-002,Chief Ngumbo,Chief,,LP03,Chifunabuli District,LP
+LP05-001,Senior Chief Mushota,Senior Chief,Chishinga People,LP05,Kawambwa District,LP
+LP05-002,Chief Chama,Chief,Chishinga People,LP05,Kawambwa District,LP
+LP07-001,Senior Chief Mwewa,Senior Chief,,LP07,Mansa District,LP
+LP07-002,Chief Mabumba,Chief,Ushi People,LP07,Mansa District,LP
+LP10-001,Chief Bunda,Chief,,LP10,Mwense District,LP
+LP11-001,Senior Chief Kambwali,Senior Chief,Lunda People,LP11,Nchelenge District,LP
+LP11-002,Chieftainess Kanyembo,Chieftainess,Lunda People,LP11,Nchelenge District,LP
+LP11-003,Chief Nshimba,Chief,Shila People,LP11,Nchelenge District,LP
+LP11-004,Chief Muyembe,Chief,,LP11,Nchelenge District,LP
+LP12-001,Senior Chief Kalasamukoso,Senior Chief,Kabende People,LP12,Samfya District,LP
+LP12-002,Chief Kasoma Bangweulu,Chief,,LP12,Samfya District,LP
+LP12-003,Chief Mulakwa,Chief,,LP12,Samfya District,LP
+MP01-001,Senior Chief Nkula,Senior Chief,Bemba People,MP01,Chinsali District,MP
+MP01-002,Chief Mubanga,Chief,Bemba People,MP01,Chinsali District,MP
+MP01-003,Chief Nkweto,Chief,Bemba People,MP01,Chinsali District,MP
+MP02-001,Chief Katyetye,Chief,Tambo People,MP02,Isoka District,MP
+MP02-002,Chief Kafwimbi Iwa,Chief,Namwanga People,MP02,Isoka District,MP
+MP03-001,Senior Chief Kopa,Senior Chief,Bisa People,MP03,Kanchibiya District,MP
+MP03-002,Chief Luchembe,Chief,Bisa People,MP03,Kanchibiya District,MP
+MP03-003,Chief Mpepo,Chief,Bisa People,MP03,Kanchibiya District,MP
+MP03-004,Chief Kabinga,Chief,Bisa People,MP03,Kanchibiya District,MP
+MP04-001,Chief Chiundaponde,Chief,Bisa People,MP04,Lavushimanda District,MP
+MP04-002,Chief Mpumba,Chief,Bisa People,MP04,Lavushimanda District,MP
+MP06-001,Chief Chikwanda,Chief,Bemba People,MP06,Mpika District,MP
+MP06-002,Chief Kabinga,Chief,Bisa People,MP06,Mpika District,MP
+MP06-003,Chief Mukungule,Chief,Bisa People,MP06,Mpika District,MP
+MP06-004,Chief Nabwalya,Chief,Bisa People,MP06,Mpika District,MP
+MP07-001,Chieftainess Waitwika,Chieftainess,Namwanga People,MP07,Nakonde District,MP
+MP08-001,Chief Chibesakunda,Chief,Bisa People,MP08,Shiwang'andu District,MP
+MP08-002,Chief Mukwikile,Chief,Bisa People,MP08,Shiwang'andu District,MP
+MP08-003,Chief Kabanda,Chief,Bisa People,MP08,Shiwang'andu District,MP
+NP01-001,Chief Chiwanangala,Chief,Bisa People,NP01,Chilubi District,NP
+NP01-002,Chief Matipa,Chief,Bisa People,NP01,Chilubi District,NP
+NP02-001,Chief Kaputa,Chief,Tabwa People,NP02,Kaputa District,NP
+NP03-001,Senior Chief Mwamba,Senior Chief,Bemba People,NP03,Kasama District,NP
+NP03-002,Chief Nkolemfumu,Chief,Bemba People,NP03,Kasama District,NP
+NP06-001,Senior Chieftainess Chungu,Senior Chieftainess,Abena Mukulu,NP06,Luwingu District,NP
+NP06-002,Senior Chief Shimumbi,Senior Chief,Bemba People,NP06,Luwingu District,NP
+NP06-003,Chief Chabula,Chief,Abena Mukulu,NP06,Luwingu District,NP
+NP06-004,Chief Chipalo,Chief,Bemba People,NP06,Luwingu District,NP
+NP06-005,Chief Katuta,Chief,Abena Mukulu,NP06,Luwingu District,NP
+NP06-006,Chief Tungati,Chief,Bemba People,NP06,Luwingu District,NP
+NP07-001,Senior Chief Nsokolo,Senior Chief,,NP07,Mbala District,NP
+NP07-002,Chief Mfwambo,Chief,,NP07,Mbala District,NP
+NP07-003,Chief Kowa,Chief,,NP07,Mbala District,NP
+NP07-004,Chief Kela,Chief,,NP07,Mbala District,NP
+NP07-005,Chief Penza,Chief,,NP07,Mbala District,NP
+NP10-001,Paramount Chief Chitimukulu,Paramount Chief,Bemba People,NP10,Mungwi District,NP
+NP10-002,Chief Chimbola,Chief,Bemba People,NP10,Mungwi District,NP
+NP10-003,Chief Makasa,Chief,Bemba People,NP10,Mungwi District,NP
+NP11-001,Senior Chief Nsama,Senior Chief,Tabwa People,NP11,Nsama District,NP
+NW02-001,Chief Nyakaseya,Chief,,NW02,Ikelenge District,NW
+NW02-002,Chieftainess Ikelenge,Chieftainess,,NW02,Ikelenge District,NW
+NW03-001,Chief Kalunga,Chief,Luchazi People,NW03,Kabompo District,NW
+NW03-002,Chief Chiyengele,Chief,Mbunda People,NW03,Kabompo District,NW
+NW05-001,Senior Chief Kasempa,Senior Chief,Kaonde People,NW05,Kasempa District,NW
+NW05-002,Chief Ingwe,Chief,Kaonde People,NW05,Kasempa District,NW
+NW06-001,Senior Chief Sikufele,Senior Chief,Mbunda People,NW06,Manyinga District,NW
+NW06-002,Chief Mutunda,Chief,,NW06,Manyinga District,NW
+NW07-001,Chief Mushima,Chief,Kaonde People,NW07,Mufumbwe District,NW
+NW07-002,Chief Chizera,Chief,Kaonde People,NW07,Mufumbwe District,NW
+NW08-001,Senior Chief Kalilele,Senior Chief,,NW08,Mushindamo District,NW
+NW08-002,Chief Musaka,Chief,,NW08,Mushindamo District,NW
+NW08-003,Chief Mulonga,Chief,,NW08,Mushindamo District,NW
+NW08-004,Chieftainess Chikola,Chieftainess,,NW08,Mushindamo District,NW
+NW09-001,Senior Chief Kanongesha,Senior Chief,Lunda People,NW09,Mwinilunga District,NW
+NW09-002,Chief Chibwika,Chief,Lunda People,NW09,Mwinilunga District,NW
+NW09-003,Chief Kanyama,Chief,Lunda People,NW09,Mwinilunga District,NW
+NW09-004,Chief Ntambu,Chief,,NW09,Mwinilunga District,NW
+NW09-005,Chief Kakoma,Chief,Lunda People,NW09,Mwinilunga District,NW
+NW09-006,Senior Chief Sailunga,Senior Chief,,NW09,Mwinilunga District,NW
+NW10-001,Senior Chief Mujimanzovu,Senior Chief,Kaonde People,NW10,Solwezi District,NW
+NW10-002,Chief Kapiji Mpanga,Chief,Kaonde People,NW10,Solwezi District,NW
+NW10-003,Chief Mumena,Chief,Kaonde People,NW10,Solwezi District,NW
+NW10-004,Chief Mukumbi,Chief,Kaonde People,NW10,Solwezi District,NW
+NW10-005,Chief Matebo,Chief,Kaonde People,NW10,Solwezi District,NW
+NW11-001,Chieftainess Nyakulenga,Chieftainess,,NW11,Zambezi District,NW
+NW11-002,Chief ChinyamaLitapi,Chief,,NW11,Zambezi District,NW
+NW11-003,Chief Ishima,Chief,,NW11,Zambezi District,NW
+SP01-001,Chieftainess Mwenda,Chieftainess,Tonga People,SP01,Chikankata District,SP
+SP01-002,Chief Naluama,Chief,Tonga People,SP01,Chikankata District,SP
+SP02-001,Chief Sikoongo,Chief,Tonga People,SP02,Chirundu District,SP
+SP02-002,Chief Chipepo,Chief,Tonga People,SP02,Chirundu District,SP
+SP03-001,Chief Macha,Chief,Tonga People,SP03,Choma District,SP
+SP03-002,Chief Mapanza,Chief,Tonga People,SP03,Choma District,SP
+SP03-003,Chief Cooma,Chief,Tonga People,SP03,Choma District,SP
+SP06-001,Chief Chikanta,Chief,Tonga People,SP06,Kalomo District,SP
+SP06-002,Chief Siachitema,Chief,,SP06,Kalomo District,SP
+SP06-003,Chief Sipatunyana,Chief,,SP06,Kalomo District,SP
+SP06-004,Chief Simwatachela,Chief,,SP06,Kalomo District,SP
+SP07-001,Chief Sekute,Chief,,SP07,Kazungula District,SP
+SP07-002,Chief Nyawa,Chief,,SP07,Kazungula District,SP
+SP07-003,Chief Musokotwane,Chief,,SP07,Kazungula District,SP
+SP07-004,Senior Chief Mukuni,Senior Chief,,SP07,Kazungula District,SP
+SP07-005,Chief Moomba,Chief,,SP07,Kazungula District,SP
+SP08-001,Senior Chief Mukuni,Senior Chief,,SP08,Livingstone District,SP
+SP10-001,Chief Monze,Chief,Tonga People,SP10,Monze District,SP
+SP10-002,Chief Choongo,Chief,Tonga People,SP10,Monze District,SP
+SP10-003,Chief Mwanza,Chief,Tonga People,SP10,Monze District,SP
+SP10-004,Chief Siamusonde,Chief,Tonga People,SP10,Monze District,SP
+SP10-005,Chief Ufwenuka,Chief,Tonga People,SP10,Monze District,SP
+SP10-006,Chief Chona,Chief,Tonga People,SP10,Monze District,SP
+SP10-007,Chief Hamusonde,Chief,Tonga People,SP10,Monze District,SP
+SP14-001,Chief Sinazongwe,Chief,Tonga People,SP14,Sinazongwe District,SP
+SP15-001,Chief Simwatachela,Chief,Tonga People,SP15,Zimba District,SP
+WP01-001,Chief Mbowanjikana,Chief,Lozi People,WP01,Kalabo District,WP
+WP01-002,Chief Mwenemundu,Chief,,WP01,Kalabo District,WP
+WP02-001,Senior Chief Amukena,Senior Chief,Lozi People,WP02,Kaoma District,WP
+WP02-002,Chief Mutondo,Chief,Nkoya People,WP02,Kaoma District,WP
+WP02-003,Chief Kahare,Chief,Nkoya People,WP02,Kaoma District,WP
+WP07-001,The Litunga,Paramount Chief,Lozi People,WP07,Mongu District,WP
+WP08-001,Senior Chief Inyambo Yeta,Senior Chief,Lozi People,WP08,Mulobezi District,WP
+WP09-001,Senior Chief Inyambo Yeta,Senior Chief,Lozi People,WP09,Mwandi District,WP
+WP10-001,Chief Litunga-La-Mboela,Chief,Lozi People,WP10,Nalolo District,WP
+WP12-001,Chief Litunga-La-Mboela,Chief,Lozi People,WP12,Senanga District,WP
+WP13-001,Senior Chief Inyambo Yeta,Senior Chief,Lozi People,WP13,Sesheke District,WP
+WP14-001,Chief Lukama,Chief,Lozi People,WP14,Shangombo District,WP
+WP15-001,Chief Mbowanjikana,Chief,Lozi People,WP15,Sikongo District,WP
+WP15-002,Chief Lwaambo,Chief,,WP15,Sikongo District,WP
+WP16-001,Chief Lukama,Chief,Lozi People,WP16,Sioma District,WP

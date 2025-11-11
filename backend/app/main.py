@@ -1,68 +1,75 @@
-# backend/app/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.config import settings
-from app.database import close_database
 
-# Routers
-from app.routes import auth, farmers, sync, uploads, farmers_qr, health, users
+# Import database and config
+try:
+    from app.config import settings
+    from app.database import close_database
+except:
+    settings = None
+    close_database = None
 
-# ------------------------------------
-# Initialize app
-# ------------------------------------
+# Import all routers
+from app.routes import health
+
+try:
+    from app.routes import auth, farmers, sync, uploads, farmers_qr, users, geo
+    all_routes_available = True
+except ImportError as e:
+    print(f"Warning: Some routes not available: {e}")
+    all_routes_available = False
+
+# Initialize FastAPI app
 app = FastAPI(
     title="Zambian Farmer System API",
     description="Backend API for Zambian Farmer Registration & Support System",
     version="1.5",
     docs_url="/docs",
     redoc_url="/redoc",
-    openapi_url="/openapi.json",
 )
 
-# ------------------------------------
-# CORS Configuration
-# ------------------------------------
-# backend/app/main.py
+# ==========================================
+# CRITICAL: CORS MIDDLEWARE - MUST BE FIRST
+# ==========================================
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r"https://.*-5173\.app\.github\.dev",
+    allow_origins=["*"],  # Allow ALL origins
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["Content-Disposition", "Access-Control-Allow-Origin"],
+    allow_methods=["*"],  # Allow ALL methods (GET, POST, PUT, DELETE, OPTIONS)
+    allow_headers=["*"],  # Allow ALL headers
+    expose_headers=["*"],
 )
 
-
-
-# ------------------------------------
-# Register Routers
-# ------------------------------------
+# Register health check first
 app.include_router(health.router)
-app.include_router(sync.router)
-app.include_router(auth.router)
-app.include_router(farmers.router)
-app.include_router(uploads.router)
-app.include_router(users.router)
-app.include_router(farmers_qr.router)
 
-# ------------------------------------
-# Lifecycle events
-# ------------------------------------
-@app.on_event("startup")
-async def startup_event():
-    print("🚀 Application startup complete.")
-    # Mongo connection will auto-init on first DB access
+# Register other routers if available
+if all_routes_available:
+    app.include_router(auth.router)
+    app.include_router(farmers.router)
+    app.include_router(farmers_qr.router)
+    app.include_router(users.router)
+    app.include_router(geo.router)
+    app.include_router(sync.router)
+    app.include_router(uploads.router)
 
+# Shutdown event
+if close_database:
+    @app.on_event("shutdown")
+    async def shutdown():
+        await close_database()
 
-@app.on_event("shutdown")
-async def shutdown_event():
-    await close_database()
-    print("🧹 MongoDB connection closed.")
+# Root endpoint
+@app.get("/", tags=["Root"])
+def read_root():
+    return {
+        "message": "Zambian Farmer System API is running",
+        "status": "ok",
+        "version": "1.5",
+        "cors": "enabled"
+    }
 
-
-# ------------------------------------
-# Root Route
-# ------------------------------------
-@app.get("/")
-async def root():
-    return {"message": "Zambian Farmer System API is running", "status": "ok"}
+# Health check
+@app.get("/health", tags=["Health"])
+def health_check():
+    return {"status": "healthy", "cors": "enabled"}
