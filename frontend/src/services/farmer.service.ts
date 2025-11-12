@@ -1,4 +1,7 @@
 import axiosClient from "@/utils/axios";
+import axios from "axios";
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 export const farmerService = {
   /**
@@ -33,6 +36,17 @@ export const farmerService = {
   },
 
   /**
+   * Delete an existing farmer.
+   * Backend: DELETE /api/farmers/{farmer_id}
+   */
+  async deleteFarmer(farmerId: string) {
+    if (!farmerId) throw new Error("Missing farmerId");
+    // Use axiosClient for consistency (it handles auth + baseURL)
+    const { data } = await axiosClient.delete(`/farmers/${farmerId}`);
+    return data;
+  },
+
+  /**
    * Upload a farmer’s photo.
    * Backend: POST /api/farmers/{farmer_id}/upload-photo
    */
@@ -55,9 +69,7 @@ export const farmerService = {
    */
   async generateIDCard(farmerId: string) {
     if (!farmerId) throw new Error("Missing farmerId");
-    const { data } = await axiosClient.post(
-      `/farmers/${farmerId}/generate-idcard`
-    );
+    const { data } = await axiosClient.post(`/farmers/${farmerId}/generate-idcard`);
     return data;
   },
 
@@ -71,7 +83,7 @@ export const farmerService = {
       `/farmers/${farmerId}/download-idcard`,
       { responseType: "blob" }
     );
-    return response.data; // <-- this is the PDF blob
+    return response.data; // PDF blob
   },
 
   /**

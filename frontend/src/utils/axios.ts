@@ -6,19 +6,32 @@ import useAuthStore from "@/store/authStore";
 // ===============================
 let API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
-  `https://${process.env.CODESPACE_NAME ? `${process.env.CODESPACE_NAME}-8000.app.github.dev` : "localhost:8000"}/api`;
+  `https://${process.env.CODESPACE_NAME
+    ? `${process.env.CODESPACE_NAME}-8000.app.github.dev`
+    : "localhost:8000"}/api`;
 
-// Always ensure it ends with /api
+// Ensure trailing /api
 if (!API_BASE_URL.endsWith("/api")) {
   API_BASE_URL = API_BASE_URL.replace(/\/$/, "") + "/api";
 }
 
-console.log("DEBUG API_BASE_URL:", API_BASE_URL);
+// Fallback for some dev containers
+if (API_BASE_URL.startsWith("https://localhost")) {
+  API_BASE_URL = "http://127.0.0.1:8000/api";
+}
 
+if (import.meta.env.DEV) {
+  console.log("🔧 [axios] Using API_BASE_URL:", API_BASE_URL);
+}
+
+// ===============================
+// Axios instance
+// ===============================
 const axiosClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
   headers: { "Content-Type": "application/json" },
+  withCredentials: true,
 });
 
 // ===============================
@@ -26,8 +39,11 @@ const axiosClient = axios.create({
 // ===============================
 axiosClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token") || useAuthStore.getState().token;
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+    const token =
+      localStorage.getItem("token") || useAuthStore.getState().token;
+    if (token && token !== "null") {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => Promise.reject(error)
@@ -36,41 +52,68 @@ axiosClient.interceptors.request.use(
 // ===============================
 // Response Interceptor (Auto Refresh)
 // ===============================
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+function onTokenRefreshed(token: string) {
+  refreshSubscribers.forEach((callback) => callback(token));
+  refreshSubscribers = [];
+}
+
+function addRefreshSubscriber(callback: (token: string) => void) {
+  refreshSubscribers.push(callback);
+}
+
 axiosClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as any;
 
-    // Only retry once
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
+
       const refreshToken =
         localStorage.getItem("refresh_token") ||
         useAuthStore.getState().refreshToken;
 
-      if (refreshToken) {
-        try {
-          const response = await axiosClient.post("/auth/refresh", {
-            refresh_token: refreshToken,
-          });
-          const { access_token } = response.data;
-          localStorage.setItem("token", access_token);
-
-          // Update Zustand store
-          const { setToken } = useAuthStore.getState();
-          setToken(access_token);
-
-          originalRequest.headers.Authorization = `Bearer ${access_token}`;
-          return axiosClient(originalRequest);
-        } catch (err) {
-          const { logout } = useAuthStore.getState();
-          logout();
-          window.location.href = "/login";
-        }
-      } else {
+      if (!refreshToken) {
         const { logout } = useAuthStore.getState();
         logout();
-        window.location.href = "/login";
+        window.location.assign("/login");
+        return Promise.reject(error);
+      }
+
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          addRefreshSubscriber((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            resolve(axiosClient(originalRequest));
+          });
+        });
+      }
+
+      isRefreshing = true;
+
+      try {
+        const res = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+          refresh_token: refreshToken,
+        });
+
+        const { access_token } = res.data;
+        localStorage.setItem("token", access_token);
+        const { setToken } = useAuthStore.getState();
+        setToken(access_token);
+
+        isRefreshing = false;
+        onTokenRefreshed(access_token);
+
+        originalRequest.headers.Authorization = `Bearer ${access_token}`;
+        return axiosClient(originalRequest);
+      } catch (err) {
+        isRefreshing = false;
+        const { logout } = useAuthStore.getState();
+        logout();
+        window.location.assign("/login");
       }
     }
 

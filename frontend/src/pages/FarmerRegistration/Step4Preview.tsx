@@ -1,7 +1,6 @@
-// frontend/src/pages/FarmerRegistrationWizard/Step4Preview.tsx
 import React, { useState } from "react";
 import farmerService from "@/services/farmer.service";
-import { WizardState } from "."; // import type
+import { WizardState } from "."; // adjust import if needed
 
 type Props = {
   data: WizardState;
@@ -65,9 +64,17 @@ export default function Step4Preview({ data, onBack, onSubmitStart, onSubmitEnd 
       {success && <div style={{ marginTop: 12, color: "#065F46" }}>{success}</div>}
 
       <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
-        <button onClick={onBack} style={{ padding: 12, background: "#6B7280", color: "white", border: "none", borderRadius: 6 }}>← Back</button>
+        <button
+          onClick={onBack}
+          style={{ padding: 12, background: "#6B7280", color: "white", border: "none", borderRadius: 6 }}
+        >
+          ← Back
+        </button>
         <div style={{ flex: 1 }} />
-        <button onClick={handleSubmit} style={{ padding: 12, background: "#16A34A", color: "white", border: "none", borderRadius: 6 }}>
+        <button
+          onClick={handleSubmit}
+          style={{ padding: 12, background: "#16A34A", color: "white", border: "none", borderRadius: 6 }}
+        >
           Submit registration
         </button>
       </div>
