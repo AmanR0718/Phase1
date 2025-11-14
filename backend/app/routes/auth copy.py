@@ -11,7 +11,7 @@ from app.utils.security import (
 from typing import Optional
 
 router = APIRouter(prefix="/api/auth", tags=["Auth"])
-    
+
 
 # ==============================
 # Models

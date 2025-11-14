@@ -37,11 +37,16 @@ async def get_current_user(authorization: str = Header(None), db=Depends(get_dat
 def require_role(allowed_roles: list[str]):
     """
     Dependency factory for enforcing RBAC.
+    Case-insensitive role checking.
     Example: @Depends(require_role(["ADMIN", "OPERATOR"]))
     """
     async def role_checker(user=Depends(get_current_user)):
-        user_roles = user.get("roles", [])
-        if not any(role in allowed_roles for role in user_roles):
+        # Normalize to lowercase
+        user_roles = [r.lower() for r in user.get("roles", [])]
+        required_roles = [r.lower() for r in allowed_roles]
+
+        # Check ANY match
+        if not any(role in user_roles for role in required_roles):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Access denied. Required roles: {allowed_roles}",

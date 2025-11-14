@@ -12,6 +12,7 @@ import Dashboard from '@/pages/Dashboard'
 import FarmerRegistration from '@/pages/FarmerRegistration'
 import FarmersList from '@/pages/FarmersList'
 import EditFarmer from '@/pages/EditFarmer'
+import FarmerDetails from '@/pages/FarmerDetails'
 import OperatorManagement from '@/pages/OperatorManagement'
 
 function App() {
@@ -76,17 +77,6 @@ function App() {
 
         {/* Shared Routes (Admin + Operator) - Farmers Management */}
         <Route
-          path="/farmers/"
-          element={
-            <ProtectedRoute>
-              <RoleRoute requiredRole={['admin', 'operator']}>
-                <FarmersList />
-              </RoleRoute>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
           path="/farmers/create"
           element={
             <ProtectedRoute>
@@ -96,7 +86,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/farmers/edit/:farmerId"
           element={
@@ -107,6 +96,27 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/farmers/:farmerId"
+          element={
+            <ProtectedRoute>
+              <RoleRoute requiredRole={['admin', 'operator']}>
+                <FarmerDetails />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/farmers"
+          element={
+            <ProtectedRoute>
+              <RoleRoute requiredRole={['admin', 'operator']}>
+                <FarmersList />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
 
         {/* Farmer Routes */}
         <Route

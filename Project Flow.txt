@@ -145,3 +145,92 @@ curl -s -X POST http://localhost:8000/api/farmers/ \
 
 
 docker compose -f docker-compose.admin.yml up -d --build
+
+
+
+
+
+
+
+
+
+
+# Stop all running containers
+docker-compose down
+
+# Remove all containers, networks, and volumes (clean slate)
+docker-compose down -v
+
+# Optional: Remove all unused Docker images to save space
+docker system prune -a --volumes
+
+
+
+# Stop all services
+docker-compose stop
+
+# Start all services
+docker-compose start
+
+# Restart a specific service
+docker-compose restart backend
+
+# View container logs
+docker-compose logs -f backend
+
+# Execute command in running container
+docker exec -it farmer_backend bash
+
+# Remove all containers and volumes (clean slate)
+docker-compose down -v
+
+# Rebuild specific service
+docker-compose build backend
+docker-compose up -d backend
+
+# View resource usage
+docker stats
+
+# Remove unused images/containers
+docker system prune -a
+
+
+
+
+# When you make changes to backend code:
+docker-compose restart backend
+
+# When you make changes to frontend code:
+# (No restart needed - hot reload is enabled)
+
+# When you update requirements.txt:
+docker-compose build --no-cache backend
+docker-compose up -d backend
+
+# When you update package.json:
+docker-compose build --no-cache frontend
+docker-compose up -d frontend
+
+# View real-time logs while
+
+
+
+# 1. Navigate to project root
+cd /path/to/your/project
+
+# 2. Build all containers (fresh build)
+docker-compose build --no-cache
+
+# 3. Start all services
+docker-compose up -d
+
+# 4. Check running containers
+docker-compose ps
+
+# 5. View logs
+docker-compose logs -f
+
+# 6. View specific service logs
+docker-compose logs -f backend
+docker-compose logs -f frontend
+docker-compose logs -f mongodb

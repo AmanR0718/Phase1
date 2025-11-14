@@ -21,7 +21,8 @@ export default function AdminDashboard() {
   const loadData = async () => {
     setLoading(true)
     try {
-      const data = await farmerService.getFarmers({ limit: 5 })
+      // ✅ FIX: Pass limit and skip as separate parameters, not an object
+      const data = await farmerService.getFarmers(5, 0)
       const farmersList = data.results || []
       setFarmers(farmersList)
       setStats({
@@ -161,19 +162,20 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <div className="space-y-3">
+              {/* ✅ FIX: Added key prop */}
               {farmers.map((farmer: any) => (
                 <div
-                  key={farmer._id}
+                  key={farmer.farmer_id || farmer._id} 
                   className="border rounded p-4 hover:shadow-md transition cursor-pointer"
                   onClick={() => navigate(`/farmers/${farmer.farmer_id}`)}
                 >
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="font-bold">
-                        {farmer.first_name} {farmer.last_name}
+                        {farmer.personal_info?.first_name || farmer.first_name} {farmer.personal_info?.last_name || farmer.last_name}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        ID: {farmer.farmer_id} | Phone: {farmer.primary_phone || farmer.phone}
+                        ID: {farmer.farmer_id} | Phone: {farmer.personal_info?.phone_primary || farmer.primary_phone || farmer.phone || 'N/A'}
                       </p>
                     </div>
                     <div className="text-right">

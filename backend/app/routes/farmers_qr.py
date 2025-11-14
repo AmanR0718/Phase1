@@ -1,55 +1,27 @@
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import FileResponse
-from app.utils.security import verify_qr_signature
+# backend/app/routes/farmers_qr.py (already exists?)
+from fastapi import APIRouter, Depends
 from app.database import get_database
-from app.dependencies.roles import require_role
-import os
+import qrcode
+from io import BytesIO
+from fastapi.responses import StreamingResponse
 
-router = APIRouter(prefix="/api/farmers", tags=["Farmers QR & ID"])
+router = APIRouter(prefix="/api/farmers", tags=["QR Codes"])
 
-# ✅ Verify QR authenticity
-@router.post("/verify-qr")
-async def verify_qr(payload: dict, db=Depends(get_database)):
-    """
-    Verify a QR payload signed with server secret.
-    Expected payload: {"farmer_id": "...", "timestamp": "...", "signature": "..."}
-    """
-    farmer_id = payload.get("farmer_id")
-    timestamp = payload.get("timestamp")
-    signature = payload.get("signature")
-
-    if not farmer_id or not timestamp or not signature:
-        raise HTTPException(status_code=400, detail="Missing fields in payload")
-
-    if not verify_qr_signature(payload):
-        raise HTTPException(status_code=400, detail="Invalid or tampered QR signature")
-
+@router.get("/{farmer_id}/qr")
+async def generate_qr(farmer_id: str, db=Depends(get_database)):
+    """Generate QR code for farmer."""
     farmer = await db.farmers.find_one({"farmer_id": farmer_id})
     if not farmer:
         raise HTTPException(status_code=404, detail="Farmer not found")
-
-    return {
-        "verified": True,
-        "farmer_id": farmer_id,
-        "name": f"{farmer['personal_info']['first_name']} {farmer['personal_info']['last_name']}",
-        "province": farmer["address"].get("province"),
-        "district": farmer["address"].get("district"),
-    }
-
-# ✅ Secure ID card PDF download
-@router.get("/{farmer_id}/download-idcard",
-            dependencies=[Depends(require_role(["ADMIN", "OPERATOR"]))])
-async def download_idcard(farmer_id: str, db=Depends(get_database)):
-    farmer = await db.farmers.find_one({"farmer_id": farmer_id})
-    if not farmer:
-        raise HTTPException(status_code=404, detail="Farmer not found")
-
-    file_path = farmer.get("id_card_path")
-    if not file_path or not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="ID card not generated yet")
-
-    return FileResponse(
-        path=file_path,
-        media_type="application/pdf",
-        filename=f"{farmer_id}_card.pdf"
-    )
+    
+    # Generate QR code
+    qr = qrcode.QRCode(version=1, box_size=10, border=4)
+    qr.add_data(farmer_id)
+    qr.make(fit=True)
+    
+    img = qr.make_image(fill_color="black", back_color="white")
+    buf = BytesIO()
+    img.save(buf)
+    buf.seek(0)
+    
+    return StreamingResponse(buf, media_type="image/png")

@@ -4,157 +4,166 @@ import farmerService from "@/services/farmer.service";
 
 export default function FarmersList() {
   const navigate = useNavigate();
+
   const [farmers, setFarmers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [page, setPage] = useState(0);
-  const [message, setMessage] = useState("");
-  const [confirmDelete, setConfirmDelete] = useState<null | string>(null);
+  const [search, setSearch] = useState("");
 
-  const limit = 5;
-
-  // 🔹 Fetch farmers
   const fetchFarmers = async () => {
     try {
       setLoading(true);
       setError("");
-      const data = await farmerService.getFarmers(limit, page * limit);
+      const data = await farmerService.getFarmers(50, 0);
+
       const farmerList = Array.isArray(data.results)
         ? data.results
         : Array.isArray(data)
         ? data
         : [];
+
       setFarmers(farmerList);
     } catch (err: any) {
-      console.error("Failed to load farmers:", err);
+      console.error("Fetch farmers error:", err);
       setError(err.response?.data?.detail || "Failed to load farmers");
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 Delete a farmer
-  const handleDelete = async (id: string) => {
+  useEffect(() => {
+    fetchFarmers();
+  }, []);
+
+  const filtered = farmers.filter((f) => {
+    const name =
+      `${f.personal_info?.first_name || ""} ${f.personal_info?.last_name || ""}`.toLowerCase();
+    const farmerId = (f.farmer_id || "").toLowerCase();
+    const phone = (f.personal_info?.phone_primary || "").toLowerCase();
+    
+    return (
+      name.includes(search.toLowerCase()) ||
+      farmerId.includes(search.toLowerCase()) ||
+      phone.includes(search.toLowerCase())
+    );
+  });
+
+  const handleDelete = async (farmerId: string) => {
+    const yes = confirm("Are you sure you want to delete this farmer?");
+    if (!yes) return;
+
     try {
-      setLoading(true);
-      await farmerService.deleteFarmer(id);
-      setMessage("✅ Farmer deleted successfully");
-      setConfirmDelete(null);
-      await fetchFarmers(); // refresh list
+      await farmerService.deleteFarmer(farmerId);
+      alert("✅ Farmer deleted successfully!");
+      fetchFarmers();
     } catch (err: any) {
-      console.error("Delete failed:", err);
-      setMessage("❌ Failed to delete farmer");
-    } finally {
-      setLoading(false);
-      setTimeout(() => setMessage(""), 4000);
+      console.error("Delete error:", err);
+      alert(err.response?.data?.detail || "❌ Failed to delete farmer");
     }
   };
 
-  useEffect(() => {
-    fetchFarmers();
-  }, [page]);
-
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#f9fafb" }}>
-      {/* 🔹 Header */}
+    <div style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
+      {/* Header */}
       <div
         style={{
           backgroundColor: "#2563EB",
           color: "white",
           padding: "15px 20px",
           display: "flex",
-          alignItems: "center",
           justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+        <button
+          onClick={() => navigate("/")}
+          style={{
+            backgroundColor: "#1E40AF",
+            color: "white",
+            border: "2px solid white",
+            padding: "8px 16px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          ← BACK
+        </button>
+
+        <h1 style={{ margin: 0 }}>All Farmers</h1>
+
+        <button
+          onClick={fetchFarmers}
+          style={{
+            backgroundColor: "#1E3A8A",
+            color: "white",
+            padding: "8px 16px",
+            borderRadius: 4,
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          🔄 Refresh
+        </button>
+      </div>
+
+      {/* Content */}
+      <div style={{ maxWidth: "1200px", margin: "20px auto", padding: "0 20px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/farmers/create")}
             style={{
-              backgroundColor: "transparent",
+              padding: "10px 20px",
+              backgroundColor: "#16A34A",
               color: "white",
-              border: "2px solid white",
-              padding: "8px 16px",
+              border: "none",
               borderRadius: "6px",
               cursor: "pointer",
               fontWeight: "bold",
             }}
           >
-            ← Back
+            ➕ Add New Farmer
           </button>
-          <h1 style={{ margin: 0 }}>Farmers</h1>
-        </div>
-        <button
-          onClick={() => navigate("/farmers/create")}
-          style={{
-            backgroundColor: "#16A34A",
-            color: "white",
-            border: "none",
-            padding: "10px 20px",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
-        >
-          ➕ Add Farmer
-        </button>
-      </div>
 
-      <div style={{ maxWidth: 1200, margin: "20px auto", padding: "0 20px" }}>
-        {/* 🔹 Toast message */}
-        {message && (
-          <div
+          <input
+            placeholder="Search by name, ID, or phone..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             style={{
-              background: message.startsWith("✅") ? "#DCFCE7" : "#FEE2E2",
-              color: message.startsWith("✅") ? "#166534" : "#B91C1C",
-              padding: "12px",
-              marginBottom: "16px",
-              borderRadius: "6px",
-              textAlign: "center",
-              fontWeight: "bold",
+              padding: 10,
+              borderRadius: 6,
+              border: "1px solid #ccc",
+              width: "300px",
             }}
-          >
-            {message}
-          </div>
-        )}
+          />
+        </div>
 
+        {/* Error */}
         {error && (
           <div
             style={{
               backgroundColor: "#FEE2E2",
-              color: "#B91C1C",
-              padding: 12,
-              borderRadius: 6,
-              marginBottom: 16,
+              color: "#DC2626",
+              padding: "15px",
+              marginBottom: "20px",
+              borderRadius: "6px",
             }}
           >
-            {error}
+            ⚠️ {error}
           </div>
         )}
 
+        {/* Loading */}
         {loading ? (
           <div
             style={{
-              background: "white",
-              padding: 40,
+              backgroundColor: "white",
+              padding: "40px",
               textAlign: "center",
-              borderRadius: 6,
-              boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+              borderRadius: "6px",
             }}
           >
-            ⏳ Loading farmers...
-          </div>
-        ) : farmers.length === 0 ? (
-          <div
-            style={{
-              background: "white",
-              padding: 40,
-              borderRadius: 6,
-              textAlign: "center",
-              color: "#6B7280",
-            }}
-          >
-            No farmers found.
+            ⏳ Loading...
           </div>
         ) : (
           <div
@@ -165,148 +174,113 @@ export default function FarmersList() {
               boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
             }}
           >
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead style={{ backgroundColor: "#F3F4F6" }}>
-                <tr>
-                  <th style={{ padding: "12px", textAlign: "left" }}>#</th>
-                  <th style={{ padding: "12px", textAlign: "left" }}>First Name</th>
-                  <th style={{ padding: "12px", textAlign: "left" }}>Last Name</th>
-                  <th style={{ padding: "12px", textAlign: "left" }}>Phone</th>
-                  <th style={{ padding: "12px", textAlign: "left" }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {farmers.map((f, i) => (
-                  <tr key={f.farmer_id || i} style={{ borderBottom: "1px solid #E5E7EB" }}>
-                    <td style={{ padding: "12px" }}>{i + 1 + page * limit}</td>
-                    <td style={{ padding: "12px", fontWeight: "bold" }}>
-                      {f.personal_info?.first_name || "-"}
-                    </td>
-                    <td style={{ padding: "12px" }}>{f.personal_info?.last_name || "-"}</td>
-                    <td style={{ padding: "12px" }}>{f.personal_info?.phone_primary || "-"}</td>
-                    <td style={{ padding: "12px", display: "flex", gap: "10px" }}>
-                      <button
-                        onClick={() => navigate(`/farmers/edit/${f.farmer_id}`)}
-                        style={{
-                          color: "#2563EB",
-                          border: "none",
-                          background: "transparent",
-                          cursor: "pointer",
-                        }}
-                      >
-                        ✏️ Edit
-                      </button>
-                      <button
-                        onClick={() => setConfirmDelete(f.farmer_id)}
-                        style={{
-                          color: "#DC2626",
-                          border: "none",
-                          background: "transparent",
-                          cursor: "pointer",
-                        }}
-                      >
-                        🗑️ Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {/* Pagination */}
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "12px 16px",
-                background: "#F9FAFB",
+                padding: "15px",
+                backgroundColor: "#1F2937",
+                color: "white",
+                fontWeight: "bold",
               }}
             >
-              <button
-                onClick={() => setPage((p) => Math.max(0, p - 1))}
-                disabled={page === 0}
-                style={{
-                  background: page === 0 ? "#E5E7EB" : "#2563EB",
-                  color: page === 0 ? "#6B7280" : "white",
-                  padding: "8px 16px",
-                  borderRadius: 6,
-                  border: "none",
-                }}
-              >
-                ← Prev
-              </button>
-              <button
-                onClick={() => setPage((p) => p + 1)}
-                style={{
-                  background: "#2563EB",
-                  color: "white",
-                  padding: "8px 16px",
-                  borderRadius: 6,
-                  border: "none",
-                }}
-              >
-                Next →
-              </button>
+              📊 Farmers ({filtered.length})
             </div>
+
+            {/* TABLE */}
+            {filtered.length === 0 ? (
+              <div
+                style={{
+                  padding: "40px",
+                  textAlign: "center",
+                  color: "#666",
+                }}
+              >
+                {search
+                  ? "No farmers match your search criteria."
+                  : "No farmers registered yet. Click 'Add New Farmer' to get started."}
+              </div>
+            ) : (
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead style={{ backgroundColor: "#F3F4F6" }}>
+                  <tr>
+                    <th style={{ padding: "15px", textAlign: "left" }}>#</th>
+                    <th style={{ padding: "15px", textAlign: "left" }}>Farmer ID</th>
+                    <th style={{ padding: "15px", textAlign: "left" }}>First Name</th>
+                    <th style={{ padding: "15px", textAlign: "left" }}>Last Name</th>
+                    <th style={{ padding: "15px", textAlign: "left" }}>Phone</th>
+                    <th style={{ padding: "15px", textAlign: "left" }}>District</th>
+                    <th style={{ padding: "15px", textAlign: "left" }}>Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filtered.map((f, i) => (
+                    <tr key={f.farmer_id || f._id || i} style={{ borderBottom: "1px solid #E5E7EB" }}>
+                      <td style={{ padding: "15px" }}>{i + 1}</td>
+                      <td style={{ padding: "15px", fontFamily: "monospace", fontSize: 13 }}>
+                        {f.farmer_id || "-"}
+                      </td>
+                      <td style={{ padding: "15px" }}>{f.personal_info?.first_name || "-"}</td>
+                      <td style={{ padding: "15px" }}>{f.personal_info?.last_name || "-"}</td>
+                      <td style={{ padding: "15px" }}>{f.personal_info?.phone_primary || "-"}</td>
+                      <td style={{ padding: "15px" }}>{f.address?.district || "-"}</td>
+
+                      <td style={{ padding: "15px", display: "flex", gap: "10px" }}>
+                        <button
+                          onClick={() => navigate(`/farmers/edit/${f.farmer_id}`)}
+                          style={{
+                            color: "#2563EB",
+                            border: "1px solid #2563EB",
+                            background: "transparent",
+                            cursor: "pointer",
+                            fontSize: 14,
+                            padding: "6px 12px",
+                            borderRadius: 4,
+                          }}
+                          title="Edit farmer"
+                        >
+                          ✏️ Edit
+                        </button>
+
+                        <button
+                          onClick={() => navigate(`/farmers/${f.farmer_id}`)}
+                          style={{
+                            color: "#16A34A",
+                            border: "1px solid #16A34A",
+                            background: "transparent",
+                            cursor: "pointer",
+                            fontSize: 14,
+                            padding: "6px 12px",
+                            borderRadius: 4,
+                          }}
+                          title="View details"
+                        >
+                          👁️ View
+                        </button>
+
+                        <button
+                          onClick={() => handleDelete(f.farmer_id)}
+                          style={{
+                            color: "#DC2626",
+                            border: "1px solid #DC2626",
+                            background: "transparent",
+                            cursor: "pointer",
+                            fontSize: 14,
+                            padding: "6px 12px",
+                            borderRadius: 4,
+                          }}
+                          title="Delete farmer"
+                        >
+                          🗑️ Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         )}
       </div>
-
-      {/* 🔹 Delete Confirmation Modal */}
-      {confirmDelete && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.4)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              background: "white",
-              padding: 24,
-              borderRadius: 8,
-              boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-              textAlign: "center",
-              width: "90%",
-              maxWidth: 400,
-            }}
-          >
-            <h3 style={{ marginBottom: 10 }}>Are you sure?</h3>
-            <p>This action will permanently delete the farmer record.</p>
-            <div style={{ display: "flex", justifyContent: "center", gap: 12, marginTop: 20 }}>
-              <button
-                onClick={() => setConfirmDelete(null)}
-                style={{
-                  background: "#6B7280",
-                  color: "white",
-                  border: "none",
-                  padding: "8px 16px",
-                  borderRadius: 6,
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleDelete(confirmDelete)}
-                style={{
-                  background: "#DC2626",
-                  color: "white",
-                  border: "none",
-                  padding: "8px 16px",
-                  borderRadius: 6,
-                }}
-              >
-                Yes, Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

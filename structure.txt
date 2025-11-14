@@ -22,8 +22,12 @@
 │   │   │   ├── farmer.py
 │   │   │   └── user.py
 │   │   ├── routes
+│   │   │   ├── auth copy.py
 │   │   │   ├── auth.py
 │   │   │   ├── dashboard.py
+│   │   │   ├── farmer_idcards.py
+│   │   │   ├── farmer_photos.py
+│   │   │   ├── farmer_reports.py 
 │   │   │   ├── farmers.py
 │   │   │   ├── farmers.py.backup
 │   │   │   ├── farmers_qr.py
@@ -35,7 +39,10 @@
 │   │   │   ├── uploads.py
 │   │   │   └── users.py
 │   │   ├── services
-│   │   │   └── farmer_service.py
+│   │   │   ├── farmer_service.py
+│   │   │   ├── idcard_service.py
+│   │   │   ├── photo_service.py
+│   │   │   └── report_service.py 
 │   │   ├── tasks
 │   │   │   ├── celery_app.py
 │   │   │   ├── id_card_task.py
@@ -49,8 +56,10 @@
 │   │   └── provinces.csv
 │   ├── requirements.txt
 │   ├── scripts
+│   │   ├── create_test_users.py
 │   │   ├── seed_admin.py
 │   │   └── seed_geo_from_csv.py
+│   ├── test_password.py
 │   └── uploads
 ├── backend_routes.txt
 ├── dependencies.txt
@@ -83,11 +92,15 @@
 │   │   │   ├── CreateFarmer.tsx
 │   │   │   ├── Dashboard.tsx
 │   │   │   ├── EditFarmer.tsx
+│   │   │   ├── FarmerDashboard.tsx
+│   │   │   ├── FarmerDetails.tsx
 │   │   │   ├── FarmerRegistration
 │   │   │   │   ├── Step1Personal.tsx
 │   │   │   │   ├── Step2Address.tsx
 │   │   │   │   ├── Step3Farm.tsx
 │   │   │   │   ├── Step4Preview.tsx
+│   │   │   │   ├── Step5PhotoUpload.tsx
+│   │   │   │   ├── Step6DocumentUpload.tsx
 │   │   │   │   └── index.tsx
 │   │   │   ├── FarmerRegistration.tsx.bak
 │   │   │   ├── FarmersList.tsx
@@ -101,6 +114,8 @@
 │   │   │   └── user.service.ts
 │   │   ├── store
 │   │   │   └── authStore.ts
+│   │   ├── types
+│   │   │   └── types.ts
 │   │   ├── utils
 │   │   │   ├── axios.ts
 │   │   │   └── debug.ts
@@ -123,7 +138,7 @@
 ├── qr_check.json
 ├── qr_test.json
 ├── qr_verify.json
-├── requirements.txt
+├── structure.txt
 ├── sync_payload.json
 ├── test_auth_cycle.sh
 ├── test_farmer.json
@@ -131,26 +146,35 @@
 ├── test_phase2_backend_full.sh
 ├── test_uploads
 │   └── photo.jpg
-└── uploads
-    ├── idcards
-    │   ├── ZM1BFFA0F9_card.pdf
-    │   ├── ZM5CC08BB8_card.pdf
-    │   └── ZM6AAC0450_card.pdf
-    ├── photos
-    │   ├── ZM1BFFA0F9
-    │   │   └── ZM1BFFA0F9_photo.jpg
-    │   ├── ZM3880A741
-    │   │   └── ZM3880A741_photo.jpg
-    │   ├── ZM5CA6FCB0
-    │   │   └── ZM5CA6FCB0_photo.jpg
-    │   ├── ZM5CC08BB8
-    │   │   └── ZM5CC08BB8_photo.jpg
-    │   ├── ZM6AAC0450
-    │   │   └── ZM6AAC0450_photo.jpg
-    │   └── ZM8C3B280C
-    └── qr
-        ├── ZM1BFFA0F9_qr.png
-        ├── ZM5CC08BB8_qr.png
-        └── ZM6AAC0450_qr.png
+├── uploads
+│   ├── ZM5E5BEB24
+│   │   ├── documents
+│   │   ├── idcards
+│   │   ├── photos
+│   │   │   ├── ZM5E5BEB24_photo.JPG
+│   │   │   └── ZM5E5BEB24_photo.png
+│   │   └── qr
+│   ├── documents
+│   ├── idcards
+│   │   ├── ZM1BFFA0F9_card.pdf
+│   │   ├── ZM5CC08BB8_card.pdf
+│   │   └── ZM6AAC0450_card.pdf
+│   ├── photos
+│   │   ├── ZM1BFFA0F9
+│   │   │   └── ZM1BFFA0F9_photo.jpg
+│   │   ├── ZM3880A741
+│   │   │   └── ZM3880A741_photo.jpg
+│   │   ├── ZM5CA6FCB0
+│   │   │   └── ZM5CA6FCB0_photo.jpg
+│   │   ├── ZM5CC08BB8
+│   │   │   └── ZM5CC08BB8_photo.jpg
+│   │   ├── ZM6AAC0450
+│   │   │   └── ZM6AAC0450_photo.jpg
+│   │   └── ZM8C3B280C
+│   └── qr
+│       ├── ZM1BFFA0F9_qr.png
+│       ├── ZM5CC08BB8_qr.png
+│       └── ZM6AAC0450_qr.png
+└── verify_setup.py
 
-34 directories, 120 files
+41 directories, 137 files

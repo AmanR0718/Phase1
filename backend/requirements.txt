@@ -9,12 +9,11 @@ python-multipart==0.0.6
 pymongo==4.4.0
 python-dotenv==1.0.0
 pycryptodome==3.20.0
-
 celery[redis]==5.3.0
 redis==4.6.0
 kombu==5.3.0
-
-
 Pillow
 qrcode
 fpdf2
+reportlab==3.6.12
+httpx==0.24.1

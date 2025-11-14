@@ -5,7 +5,8 @@ from app.database import get_database
 from bson.regex import Regex
 import math
 
-router = APIRouter(tags=["Geographic Data"])
+router = APIRouter(prefix="/api/geo", tags=["Geographic Data"])
+
 
 def is_valid_number(value):
     """Check if a number is JSON-serializable (not NaN or Infinity)"""
