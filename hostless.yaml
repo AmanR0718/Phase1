@@ -1,9 +1,9 @@
 build:
   system: docker
   min_cpu: 0.1
-  max_cpu: 0.1
+  max_cpu: 0.5
   min_memory: 128
-  max_memory: 128
+  max_memory: 512
 
 dockerfile_path: "./backend/Dockerfile.hostless"
 start_command: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
