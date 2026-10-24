@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       mobile_api_url:
-        description: 'Mobile API URL (VITE_MOBILE_API_URL). Optional - fallback to secret or default.'
+        description: 'Mobile API URL (VITE_MOBILE_API_URL). Optional; configure a VITE_* API URL in workflow secrets if omitted.'
         required: false
         default: ''
 
@@ -29,22 +29,20 @@ jobs:
           cd frontend
           npm ci
 
-      - name: Build frontend with VITE_MOBILE_API_URL
+      - name: Build frontend with configured API URL
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_API_PROD_URL: ${{ secrets.VITE_API_PROD_URL }}
+          VITE_MOBILE_API_URL: ${{ github.event.inputs.mobile_api_url || secrets.VITE_MOBILE_API_URL }}
         run: |
           set -e
           cd frontend
-          if [ -n "${{ github.event.inputs.mobile_api_url }}" ]; then
-            VITE_MOBILE_API_URL="${{ github.event.inputs.mobile_api_url }}"
-          elif [ -n "${{ secrets.VITE_MOBILE_API_URL }}" ]; then
-            VITE_MOBILE_API_URL="${{ secrets.VITE_MOBILE_API_URL }}"
-          else
-            VITE_MOBILE_API_URL="http://13.204.83.198:8000"
+          if [ -z "${VITE_API_BASE_URL:-}" ] && [ -z "${VITE_API_PROD_URL:-}" ] && [ -z "${VITE_MOBILE_API_URL:-}" ]; then
+            echo "Configure one of VITE_API_BASE_URL, VITE_API_PROD_URL, or VITE_MOBILE_API_URL before building."
+            exit 1
           fi
-          echo "Using VITE_MOBILE_API_URL=${VITE_MOBILE_API_URL}"
-          export VITE_MOBILE_API_URL
           npm run build
         shell: bash
-
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:

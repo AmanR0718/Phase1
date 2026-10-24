@@ -42,8 +42,8 @@ async def connect_to_database() -> None:
         logger.info("✅ Successfully connected to MongoDB")
         
     except Exception as e:
-        logger.error(f"❌ Failed to connect to MongoDB: {e}")
-        raise
+        logger.error("❌ Failed to connect to MongoDB (%s)", type(e).__name__)
+        raise RuntimeError("MongoDB connection failed") from None
 
 
 async def close_database_connection() -> None:
@@ -61,7 +61,7 @@ async def close_database_connection() -> None:
             _database = None
             logger.info("✅ MongoDB connection closed successfully")
         except Exception as e:
-            logger.error(f"❌ Error closing MongoDB connection: {e}")
+            logger.error("❌ Error closing MongoDB connection (%s)", type(e).__name__)
 
 
 def get_database() -> AsyncIOMotorDatabase:

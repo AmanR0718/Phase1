@@ -72,7 +72,7 @@ async def lifespan(app: FastAPI):
         await connect_to_database()
         logger.info("✅ Database connection established")
     except Exception as e:
-        logger.error(f"❌ Database connection failed: {e}")
+        logger.error("❌ Database connection failed (%s)", type(e).__name__)
         raise
     
     logger.info("✅ Application startup complete")
@@ -172,7 +172,6 @@ allowed_origins = [
     "http://localhost",
     "capacitor://localhost",
     "ionic://localhost",
-    "http://13.204.83.198:8000",
 ]
 
 frontend_origin_env = os.getenv("FRONTEND_ORIGIN", "")
@@ -343,23 +342,21 @@ async def root():
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     request_id = getattr(request.state, "request_id", "unknown")
-    
-    logger.error(f"[{request_id}] ❌ Validation Error on {request.method} {request.url.path}")
-    logger.error(f"[{request_id}]    Errors: {exc.errors()}")
-    
-    try:
-        body = await request.body()
-        logger.error(f"[{request_id}]    Request Body: {body.decode('utf-8')[:500]}")
-    except:
-        pass
-    
+    safe_errors = [
+        {"type": str(error.get("type", "validation_error"))}
+        for error in exc.errors()
+    ]
+    logger.warning(
+        "[%s] Validation failed on %s %s (%d issue(s))",
+        request_id, request.method, request.url.path, len(safe_errors),
+    )
     return JSONResponse(
         status_code=422,
         content={
             "detail": "Validation error",
-            "errors": exc.errors(),
-            "request_id": request_id
-        }
+            "errors": safe_errors,
+            "request_id": request_id,
+        },
     )
 
 

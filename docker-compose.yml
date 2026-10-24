@@ -17,7 +17,7 @@ services:
       farmer-redis:
         condition: service_healthy
     env_file:
-      - .env.production
+      - .env.local
     volumes:
       - ./uploads:/app/uploads
     restart: always
@@ -43,7 +43,7 @@ services:
       farmer-redis:
         condition: service_healthy
     env_file:
-      - .env.production
+      - .env.local
     volumes:
       - ./uploads:/app/uploads
     restart: always

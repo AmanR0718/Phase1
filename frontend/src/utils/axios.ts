@@ -1,8 +1,9 @@
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import useAuthStore from "@/store/authStore";
+import { getApiBaseUrl } from "@/config/mobile";
 
 // Use production API URL for mobile builds
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://13.204.83.198:8000';
+const API_BASE_URL = getApiBaseUrl();
 
 console.log('🌐 API Base URL:', API_BASE_URL);
 console.log('🌐 Full endpoint:', `${API_BASE_URL}/api`);

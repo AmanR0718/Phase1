@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { safeNavigate } from '@/config/navigation';
+import { getApiBaseUrl } from '@/config/mobile';
 import useAuthStore from "@/store/authStore";
 import { farmerService } from "@/services/farmer.service";
 import { useNotification } from "@/contexts/NotificationContext";
@@ -71,7 +72,7 @@ export default function FarmerDashboard() {
         console.log('[Photo] Loading farmer photo:', photoPath);
         setPhotoError(false);
         
-        const baseURL = import.meta.env.VITE_API_BASE_URL || "http://13.204.83.198:8000";
+        const baseURL = getApiBaseUrl();
         const fullUrl = photoPath.startsWith('http') ? photoPath : `${baseURL}${photoPath}`;
         
         const response = await fetch(fullUrl, {
@@ -115,7 +116,7 @@ export default function FarmerDashboard() {
         setQrError(false);
         
         // Fetch QR code with authentication
-        const baseURL = import.meta.env.VITE_API_BASE_URL || "http://13.204.83.198:8000";
+        const baseURL = getApiBaseUrl();
         const response = await fetch(`${baseURL}/api/farmers/${farmerData.farmer_id}/qr`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`,

@@ -40,13 +40,10 @@ if [ -d "$FRONTEND_DIR" ]; then
 			npm ci
 		fi
 
-		# Allow build-time override using environment or fallback
-		if [ -n "$VITE_MOBILE_API_URL" ]; then
-			echo "Using existing VITE_MOBILE_API_URL from environment: $VITE_MOBILE_API_URL"
-		else
-			# Fallback to deployed IP if not set
-			export VITE_MOBILE_API_URL="http://13.204.83.198:8000"
-			echo "No VITE_MOBILE_API_URL found; falling back to $VITE_MOBILE_API_URL"
+		# Require a configured production URL; never bake a stale endpoint into a build.
+		if [ -z "$VITE_API_BASE_URL" ] && [ -z "$VITE_API_PROD_URL" ] && [ -z "$VITE_MOBILE_API_URL" ]; then
+			echo "Set VITE_API_BASE_URL, VITE_API_PROD_URL, or VITE_MOBILE_API_URL before building." >&2
+			exit 1
 		fi
 
 		# Run build

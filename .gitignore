@@ -1,15 +1,29 @@
+# Environment files and secrets
 .env
-.env.local
-.env.*.local.env.production
+.env.*
+**/.env
+**/.env.*
 *.env
+!.env.example
+!.env.*.example
+!.env.local.example
+!**/.env.example
+!**/.env.*.example
+!**/.env.local.example
 
-# Security: Never commit credential files
-backend/.env
-backend/.env.production
-backend/config.env
-frontend/.env
-frontend/.env.production
-# Android Release Keystore
+# Private keys and local credentials
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.keystore.base64
+id_rsa*
+id_ed25519*
+
+# Android release keystores
 frontend/android/*.keystore
 frontend/android/*.keystore.base64
+
+# Local backups
 backend/scripts/backups/*.json

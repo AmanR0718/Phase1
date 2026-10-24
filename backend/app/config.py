@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     def validate_mongodb_url(cls, v: str) -> str:
         if not v.startswith(('mongodb://', 'mongodb+srv://')):
             raise ValueError("MONGODB_URL must start with 'mongodb://' or 'mongodb+srv://'")
-        logger.info(f"✅ MongoDB URL validated: {v[:20]}...")
+        logger.info("✅ MongoDB URL validated")
         return v
 
 
@@ -89,9 +89,9 @@ class Settings(BaseSettings):
     @field_validator('REDIS_URL')
     @classmethod
     def validate_redis_url(cls, v: str) -> str:
-        if not v.startswith('redis://'):
-            raise ValueError("REDIS_URL must start with 'redis://'")
-        logger.info(f"✅ Redis URL validated: {v}")
+        if not v.startswith(('redis://', 'rediss://')):
+            raise ValueError("REDIS_URL must start with 'redis://' or 'rediss://'")
+        logger.info("✅ Redis URL validated (%s)", "TLS" if v.startswith("rediss://") else "non-TLS")
         return v
 
 
@@ -170,7 +170,6 @@ class Settings(BaseSettings):
             "http://localhost",
             "capacitor://localhost",
             "ionic://localhost",
-            "http://13.204.83.198:8000",
         ],
         description="Allowed CORS origins"
     )
@@ -239,7 +238,7 @@ class Settings(BaseSettings):
     # Pydantic v2 Configuration
     # ======================================
     model_config = SettingsConfigDict(
-        env_file=".env.production" if os.getenv("ENVIRONMENT") == "production" else ".env",
+        env_file=".env.local",
         env_file_encoding="utf-8",
         case_sensitive=True,
         extra="ignore",
@@ -255,7 +254,7 @@ class Settings(BaseSettings):
         logger.info(f"   Environment: {self.ENVIRONMENT}")
         logger.info(f"   Debug Mode: {self.DEBUG}")
         logger.info(f"   MongoDB Database: {self.MONGODB_DB_NAME}")
-        logger.info(f"   Redis URL: {self.REDIS_URL}")
+        logger.info("   Redis URL: configured")
         logger.info(f"   Upload Directory: {self.UPLOAD_DIR}")
         logger.info(f"   Max Upload Size: {self.MAX_UPLOAD_SIZE_MB}MB")
         logger.info(f"   JWT Algorithm: {self.JWT_ALGORITHM}")
@@ -313,9 +312,8 @@ def get_settings() -> Settings:
         return settings
         
     except Exception as e:
-        logger.error(f"❌ Failed to load settings: {e}")
-        logger.error(f"   Error type: {type(e).__name__}")
-        raise
+        logger.error("❌ Failed to load settings (%s)", type(e).__name__)
+        raise RuntimeError("Application settings validation failed") from None
 
 
 # Global settings instance

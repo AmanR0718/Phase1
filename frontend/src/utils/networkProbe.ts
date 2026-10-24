@@ -55,7 +55,7 @@ export const ensureApiBase = async (): Promise<string> => {
   // Only probe /api/health - most reliable endpoint
   const healthPath = "/api/health";
   
-  // Try the configured URL first (should be http://13.204.83.198:8000)
+  // Probe the URL selected by the shared environment configuration.
   try {
     const url = `${candidate}${healthPath}`;
     const response = await timeoutFetch(url, 5000);
