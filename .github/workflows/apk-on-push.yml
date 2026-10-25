@@ -71,36 +71,3 @@ jobs:
           name: app-debug-apk
           path: frontend/android/app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Build & sign release (optional)
-        if: ${{ secrets.KEYSTORE_BASE64 && secrets.KEYSTORE_PASSWORD && secrets.KEY_ALIAS && secrets.KEY_PASSWORD }}
-        working-directory: frontend/android
-        env:
-          JAVA_HOME: ${{ steps.setup-java.outputs.java-home }}
-        run: |
-          set -e
-          echo "Decoding keystore from secret..."
-          echo "$KEYSTORE_BASE64" | base64 --decode > keystore.jks
-          chmod 600 keystore.jks
-
-          echo "Building release APK (unsigned)..."
-          chmod +x ./gradlew
-          ./gradlew assembleRelease -Pci --no-daemon
-
-          UNSIGNED_APK=app/build/outputs/apk/release/app-release-unsigned.apk
-          SIGNED_APK=app/build/outputs/apk/release/app-release-signed.apk
-
-          echo "Signing APK using apksigner..."
-          APKSIGNER_PATH=$(find "$ANDROID_HOME" -type f -name apksigner -print -quit || true)
-          if [ -z "$APKSIGNER_PATH" ]; then
-            # fallback to build-tools path
-            APKSIGNER_PATH="$ANDROID_SDK_ROOT/build-tools/33.0.2/apksigner"
-          fi
-
-          "$APKSIGNER_PATH" sign --ks keystore.jks --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} --key-pass pass:${{ secrets.KEY_PASSWORD }} --out "$SIGNED_APK" "$UNSIGNED_APK"
-
-      - name: Upload release APK artifact (signed)
-        if: ${{ secrets.KEYSTORE_BASE64 && secrets.KEYSTORE_PASSWORD && secrets.KEY_ALIAS && secrets.KEY_PASSWORD }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-apk
-          path: frontend/android/app/build/outputs/apk/release/app-release-signed.apk
