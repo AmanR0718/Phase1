@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Install frontend dependencies
         working-directory: frontend
@@ -51,11 +51,10 @@ jobs:
           java-version: '17'
 
       - name: Setup Android SDK
-        uses: r0adkll/setup-android@v2
-        with:
-          api-level: 33
-          build-tools: '33.0.2'
-          target: android-33
+        uses: android-actions/setup-android@v4
+
+      - name: Install Android SDK platform and build tools
+        run: sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
       - name: Build Android APK (debug)
         working-directory: frontend/android
