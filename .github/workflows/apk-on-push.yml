@@ -1,17 +1,13 @@
 # Build Android APK on push
-# - Builds frontend with VITE_MOBILE_API_URL (from repo secret or fallback)
-# - Runs Capacitor sync and builds Android debug APK
-# - Uploads APK as workflow artifact for easy download
-#
-# Notes:
-# - Set repository secret `VITE_MOBILE_API_URL` to your API Gateway or backend URL to override the fallback.
-# - For release signing, add keystore secrets and modify the Gradle signingConfig steps.
+# - Builds the mobile frontend against the Hostless CEM API.
+# - Runs Capacitor sync and builds an Android debug APK.
+# - Uploads the APK as a workflow artifact.
 
 name: Build Android APK on Push
 
 on:
   push:
-    branches: [ main, farmer-edit-fix ]
+    branches: [ main, farmer-edit-fix, deploy ]
 
 jobs:
   build-apk:
@@ -31,15 +27,11 @@ jobs:
         working-directory: frontend
         run: npm ci
 
-      - name: Set VITE_MOBILE_API_URL (secret or fallback)
+      - name: Configure Hostless API URLs
         run: |
-          if [ -n "${{ secrets.VITE_MOBILE_API_URL }}" ]; then
-            echo "VITE_MOBILE_API_URL=${{ secrets.VITE_MOBILE_API_URL }}" >> $GITHUB_ENV
-            echo "Using VITE_MOBILE_API_URL from secrets"
-          else
-            echo "VITE_MOBILE_API_URL=https://jydqy4tril.execute-api.ap-south-1.amazonaws.com/prod" >> $GITHUB_ENV
-            echo "No secret found; using fallback API Gateway URL"
-          fi
+          echo "VITE_API_BASE_URL=https://cem.hostless.app" >> "$GITHUB_ENV"
+          echo "VITE_API_PROD_URL=https://cem.hostless.app" >> "$GITHUB_ENV"
+          echo "VITE_MOBILE_API_URL=https://cem.hostless.app" >> "$GITHUB_ENV"
 
       - name: Build frontend (Vite)
         working-directory: frontend
@@ -51,11 +43,12 @@ jobs:
           npm ci
           npx cap sync android
 
-      - name: Setup Java JDK 11
+      - name: Setup Java JDK 17
+        id: setup-java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
 
       - name: Setup Android SDK
         uses: r0adkll/setup-android@v2
