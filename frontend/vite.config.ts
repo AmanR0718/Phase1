@@ -2,10 +2,14 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
-// Resolve backend URL - prefer env var, fallback to localhost
-const BACKEND_URL = process.env.VITE_API_BASE_URL || 'http://localhost:8000'
+export default defineConfig(({ command }) => {
+  const BACKEND_URL =
+    process.env.VITE_API_BASE_URL ||
+    process.env.VITE_API_PROD_URL ||
+    process.env.VITE_MOBILE_API_URL ||
+    (command === 'serve' ? 'http://localhost:8000' : 'https://cem.hostless.app');
 
-export default defineConfig({
+  return {
   plugins: [react()],
   resolve: {
     alias: {
@@ -49,4 +53,5 @@ export default defineConfig({
   define: {
     'process.env.VITE_API_BASE_URL': JSON.stringify(BACKEND_URL),
   },
+  }
 })
