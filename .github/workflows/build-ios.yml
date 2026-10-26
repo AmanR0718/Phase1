@@ -1,0 +1,88 @@
+name: Build iOS Simulator App
+
+on:
+  push:
+    branches:
+      - dev-apk
+    paths:
+      - "frontend/**"
+      - ".github/workflows/build-ios.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-ios-simulator:
+    name: Build unsigned iOS Simulator app
+    runs-on: macos-14
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out dev-apk
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Set up Xcode
+        run: |
+          xcodebuild -version
+          xcrun simctl list devices available | head -40
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci --legacy-peer-deps
+
+      - name: Configure Hostless API URLs
+        run: |
+          echo "VITE_API_BASE_URL=https://cem.hostless.app" >> "$GITHUB_ENV"
+          echo "VITE_API_PROD_URL=https://cem.hostless.app" >> "$GITHUB_ENV"
+          echo "VITE_MOBILE_API_URL=https://cem.hostless.app" >> "$GITHUB_ENV"
+
+      - name: Build web app
+        working-directory: frontend
+        run: npm run build
+
+      - name: Sync Capacitor iOS project
+        working-directory: frontend
+        run: npx cap sync ios
+
+      - name: Install CocoaPods
+        working-directory: frontend/ios/App
+        run: pod install
+
+      - name: Build iOS Simulator app
+        working-directory: frontend
+        run: |
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath ios-build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Upload iOS Simulator app
+        uses: actions/upload-artifact@v4
+        with:
+          name: cem-farmer-dev-ios-simulator
+          path: frontend/ios-build/Build/Products/Debug-iphonesimulator/App.app
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Build summary
+        run: |
+          {
+            echo "## iOS simulator build succeeded"
+            echo
+            echo "- Branch: `dev-apk`"
+            echo "- Output: unsigned iOS Simulator `.app` artifact"
+            echo "- An iPhone-installable IPA requires Apple signing credentials and provisioning."
+          } >> "$GITHUB_STEP_SUMMARY"
