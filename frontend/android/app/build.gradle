@@ -5,7 +5,7 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
     
     defaultConfig {
-        applicationId "com.cem.farmerapp"
+        applicationId "com.cem.farmerapp.dev"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         
