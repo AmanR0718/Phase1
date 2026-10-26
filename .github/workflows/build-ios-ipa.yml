@@ -19,12 +19,13 @@ jobs:
           IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
           IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
           IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+          IOS_KEYCHAIN_PASSWORD: ${{ secrets.IOS_KEYCHAIN_PASSWORD }}
         run: |
           if [[ "$GITHUB_REF" != "refs/heads/dev-apk" ]]; then
             echo "::error::Run this workflow from the dev-apk branch."
             exit 1
           fi
-          for name in IOS_CERTIFICATE_BASE64 IOS_CERTIFICATE_PASSWORD IOS_PROVISIONING_PROFILE_BASE64 IOS_TEAM_ID; do
+          for name in IOS_CERTIFICATE_BASE64 IOS_CERTIFICATE_PASSWORD IOS_PROVISIONING_PROFILE_BASE64 IOS_TEAM_ID IOS_KEYCHAIN_PASSWORD; do
             if [[ -z "${!name}" ]]; then
               echo "::error::Missing repository Actions secret: $name"
               exit 1
@@ -98,6 +99,15 @@ jobs:
           security cms -D -i "$PROFILE_PATH" > "$PROFILE_PLIST"
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print UUID' "$PROFILE_PLIST")
           PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print Name' "$PROFILE_PLIST")
+          APP_IDENTIFIER=$(/usr/libexec/PlistBuddy -c 'Print Entitlements:application-identifier' "$PROFILE_PLIST")
+          if [[ "$APP_IDENTIFIER" != *".zm.gov.agri.cem" ]]; then
+            echo "::error::The provisioning profile must match bundle ID zm.gov.agri.cem."
+            exit 1
+          fi
+          if ! /usr/libexec/PlistBuddy -c 'Print ProvisionedDevices' "$PROFILE_PLIST" >/dev/null 2>&1; then
+            echo "::error::Use an Ad Hoc profile that includes the target iPhone UDID."
+            exit 1
+          fi
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
           cp "$PROFILE_PATH" "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.mobileprovision"
           echo "uuid=$PROFILE_UUID" >> "$GITHUB_OUTPUT"
