@@ -48,6 +48,11 @@ jobs:
         working-directory: frontend
         run: npm run build
 
+      - name: Set iOS deployment target for Capacitor Camera
+        working-directory: frontend
+        run: |
+          sed -i '' "s/platform :ios, '13.0'/platform :ios, '15.0'/" ios/App/Podfile
+
       - name: Sync Capacitor iOS project
         working-directory: frontend
         run: npx cap sync ios
@@ -66,6 +71,7 @@ jobs:
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath ios-build \
+            IPHONEOS_DEPLOYMENT_TARGET=15.0 \
             CODE_SIGNING_ALLOWED=NO \
             build
 
