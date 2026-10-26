@@ -5,7 +5,6 @@ import useAuthStore from "@/store/authStore";
 import { logger } from "@/utils/logger";
 import { globalToast } from "@/utils/globalToast";
 import { getApiBaseUrl } from "@/config/mobile";
-import { ensureApiBase, resetProbeCache } from "@/utils/networkProbe";
 
 const API_BASE_URL = getApiBaseUrl();
 const SLOW_REQUEST_MS = 8000;
@@ -58,14 +57,6 @@ axiosInstance.interceptors.request.use(
     timedConfig.metadata = { startedAt: Date.now() };
     const token =
       localStorage.getItem("access_token") || useAuthStore.getState().token;
-    try {
-      const baseUrl = await ensureApiBase();
-      config.baseURL = `${baseUrl}/api`;
-    } catch (probeError) {
-      logger.warn("axios", "API base probe failed during request setup", {
-        error: (probeError as Error)?.message,
-      });
-    }
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
       useAuthStore.getState().updateActivity();
@@ -117,10 +108,6 @@ axiosInstance.interceptors.response.use(
         method: error.config?.method?.toUpperCase(),
       }
     );
-
-    if (!error.response) {
-      resetProbeCache();
-    }
 
     // 401 — try token refresh, then force logout
     if (status === 401 && !originalRequest._retry) {
